@@ -7,9 +7,8 @@ use crate::eventsource::source::Context;
 
 fn main() {
     let mut context = Context { stream: HashMap::new() };
-    context.stream.insert(
-        "foo".to_string(), 
+    context.publish_message(
         Message { message: "message".to_string() } 
     );
-    println!("hashmap: {:?}", context.stream)
+    println!("hashmap: {:?}", context.stream);
 }

@@ -4,7 +4,9 @@ use winit::window::WindowBuilder;
 use winit::event::Event;
 use winit::event::WindowEvent;
 
-pub fn render() {
+use crate::graphics::opengl::render;
+
+pub fn updateWindow() {
     println!("rendering graphics...");
 
     let event_loop = EventLoop::new();
@@ -43,6 +45,7 @@ pub fn render() {
                 // You only need to call this if you've determined that you need to redraw, in
                 // applications which do not always need to. Applications that redraw continuously
                 // can just render here instead.
+                render();
                 window.request_redraw();
             },
             Event::RedrawRequested(_) => {

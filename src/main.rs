@@ -9,7 +9,7 @@ use std::sync::atomic::Ordering;*/
 
 use crate::eventsource::source::Message;
 use crate::eventsource::source::Context;
-use crate::os::window_manager::render;
+use crate::os::window_manager::updateWindow;
 
 #[allow(dead_code)]
 fn update() {
@@ -68,5 +68,5 @@ fn update() {
 }*/
 
 fn main() {
-    render();
+    updateWindow();
 }

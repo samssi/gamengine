@@ -43,7 +43,7 @@ fn print(count: i32) {
     println!("Running... Count {}", count)
 }
 
-fn main() {
+/*fn main() {
     // update();
     let mut count = 0;
     let running = Arc::new(AtomicBool::new(true));
@@ -63,4 +63,8 @@ fn main() {
         }
        
     }
+}*/
+
+fn main() {
+    render();
 }

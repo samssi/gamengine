@@ -6,7 +6,7 @@ use crate::eventsource::source::Message;
 use crate::eventsource::source::Context;
 
 fn main() {
-    let mut context = Context { stream: HashMap::new() };
+    let mut context = Context { source: HashMap::new() };
     context.publish_message(
         "foo".to_string(),
         Message { message: "message".to_string() } 
@@ -22,7 +22,7 @@ fn main() {
         Message { message: "message2".to_string() } 
     );
     
-    println!("hashmap: {:?}", context.stream);
+    println!("hashmap: {:?}", context.source);
 
     let message = context.pop_message("foo".to_string());
     match message {
@@ -30,5 +30,5 @@ fn main() {
         None => println!("none")
     }
 
-    println!("hashmap: {:?}", context.stream);
+    println!("hashmap: {:?}", context.source);
 }

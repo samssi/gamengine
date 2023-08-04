@@ -6,19 +6,19 @@ pub struct Message {
 }
 
 pub struct Context {
-    pub stream: HashMap<String, Vec<Message>>
+    pub source: HashMap<String, Vec<Message>>
 }
 
 impl Context {
     pub fn publish_message (&mut self, key: String, message: Message) {
-        match self.stream.get_mut(&key) {
+        match self.source.get_mut(&key) {
             Some(messages) => { messages.push(message); },
-            None => { self.stream.insert(key, vec![message]); }
+            None => { self.source.insert(key, vec![message]); }
         }
     }
 
     pub fn pop_message (&mut self, key: String) -> Option<Message> {
-        match self.stream.get_mut(&key) {
+        match self.source.get_mut(&key) {
             Some(messages) => messages.pop(),
             None => None
         }

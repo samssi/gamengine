@@ -1,14 +1,15 @@
 mod eventsource;
 mod graphics;
+pub mod os;
 
 use std::collections::HashMap;
-use std::sync::Arc;
+/*use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
+use std::sync::atomic::Ordering;*/
 
 use crate::eventsource::source::Message;
 use crate::eventsource::source::Context;
-use crate::graphics::opengl::render;
+use crate::os::window_manager::render;
 
 #[allow(dead_code)]
 fn update() {
@@ -39,9 +40,10 @@ fn update() {
 
     println!("hashmap: {:?}", context.source);
 }
-fn print(count: i32) {
+
+/*fn print(count: i32) {
     println!("Running... Count {}", count)
-}
+}*/
 
 /*fn main() {
     // update();

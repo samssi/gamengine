@@ -21,10 +21,14 @@ fn main() {
         "foo".to_string(),
         Message { message: "message2".to_string() } 
     );
-    context.publish_message(
-        "bar".to_string(),
-        Message { message: "message".to_string() } 
-    );
     
+    println!("hashmap: {:?}", context.stream);
+
+    let message = context.pop_message("foo".to_string());
+    match message {
+        Some(message) => println!("{}", message.message),
+        None => println!("none")
+    }
+
     println!("hashmap: {:?}", context.stream);
 }

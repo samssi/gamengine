@@ -1,4 +1,5 @@
 mod eventsource;
+mod graphics;
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -7,6 +8,7 @@ use std::sync::atomic::Ordering;
 
 use crate::eventsource::source::Message;
 use crate::eventsource::source::Context;
+use crate::graphics::opengl::render;
 
 #[allow(dead_code)]
 fn update() {
@@ -54,11 +56,11 @@ fn main() {
     loop {
         count += 1;
         print(count);
+        render();
         if !running.load(Ordering::SeqCst) {
             println!("Program was terminated");
             break;
         }
        
     }
-    
 }

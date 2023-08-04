@@ -6,6 +6,7 @@ use winit::event::WindowEvent;
 
 use crate::graphics::opengl::render;
 
+// TODO: revert to glfw
 pub fn updateWindow() {
     println!("rendering graphics...");
 

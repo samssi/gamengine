@@ -1,0 +1,5 @@
+/target
+main.exe
+main.pdb
+.vscode/launch.json
+.vscode/settings.json

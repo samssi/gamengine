@@ -6,11 +6,14 @@ pub struct Message {
 }
 
 pub struct Context {
-    pub stream: HashMap<String, Message>
+    pub stream: HashMap<String, Vec<Message>>
 }
 
 impl Context {
-    pub fn publish_message (&mut self, message: Message) {
-        self.stream.insert("foo".to_string(), message);
+    pub fn publish_message (&mut self, key: String, message: Message) {
+        match self.stream.get_mut(&key) {
+            Some(messages) => { messages.push(message); },
+            None => { self.stream.insert(key, vec![message]); }
+        }
     }
 }

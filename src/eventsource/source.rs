@@ -5,11 +5,11 @@ pub struct Message {
     pub message: String
 }
 
-pub struct Context {
+pub struct GEContext {
     pub source: HashMap<String, Vec<Message>>
 }
 
-impl Context {
+impl GEContext {
     pub fn publish_message (&mut self, key: String, message: Message) {
         match self.source.get_mut(&key) {
             Some(messages) => { messages.push(message); },

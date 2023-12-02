@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 ctrlc = "3.4.0"
 gl = "0.14.0"
-winit = "0.28.6"
+glfw = "0.54.0"

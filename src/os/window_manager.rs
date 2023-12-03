@@ -25,11 +25,11 @@ pub fn start_window_manager() {
 
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
-        let mut count = 0;
+        // let mut count = 0;
 
         while !window.should_close() {
-            count += 1;
-            report_run_count(count);
+            // count += 1;
+            // report_run_count(count);
             window.swap_buffers();
             glfw.poll_events();
 

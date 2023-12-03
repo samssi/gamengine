@@ -28,8 +28,9 @@ fn update() {
     
     println!("hashmap: {:?}", context.source);
 
-    let message = context.get_message("foo".to_string());
+    let message = context.pop_message("foo".to_string());
 
+    
     match message {
         Some(message) => println!("{}", message.message),
         None => println!("none")
@@ -39,5 +40,6 @@ fn update() {
 }
 
 fn main() {
+    update();
     start_window_manager();
 }

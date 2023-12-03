@@ -14,10 +14,21 @@ impl GEContext {
         self.source.insert(key, message);
     }
 
-    pub fn get_message (&mut self, key: String) -> Option<Message> {
-        match self.source.get(&key) {
-            Some(message) => Some(message.value().clone()),
+    pub fn remove_message (&mut self, key: String) {
+        if self.source.contains_key(&key) { self.source.remove(&key); }
+    }
+
+    pub fn pop_message (&mut self, key: String) -> Option<Message> {
+        let optional_message = match self.source.get(&key) {
+            Some(message) => {
+                let value = message.value().clone();
+                Some(value)
+            }
             None => None
-        }
+        };
+        
+        self.remove_message(key);
+
+        return optional_message
     }
 }

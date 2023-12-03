@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 ctrlc = "3.4.0"
+dashmap = "5.5.3"
 gl = "0.14.0"
 glfw = "0.54.0"

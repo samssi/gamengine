@@ -1,25 +1,22 @@
-use std::collections::HashMap;
+use dashmap::DashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Message {
     pub message: String
 }
 
 pub struct GEContext {
-    pub source: HashMap<String, Vec<Message>>
+    pub source: DashMap<String, Message>
 }
 
 impl GEContext {
     pub fn publish_message (&mut self, key: String, message: Message) {
-        match self.source.get_mut(&key) {
-            Some(messages) => { messages.push(message); },
-            None => { self.source.insert(key, vec![message]); }
-        }
+        self.source.insert(key, message);
     }
 
-    pub fn pop_message (&mut self, key: String) -> Option<Message> {
-        match self.source.get_mut(&key) {
-            Some(messages) => messages.pop(),
+    pub fn get_message (&mut self, key: String) -> Option<Message> {
+        match self.source.get(&key) {
+            Some(message) => Some(message.value().clone()),
             None => None
         }
     }

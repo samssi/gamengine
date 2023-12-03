@@ -2,7 +2,7 @@ mod eventsource;
 mod graphics;
 mod os;
 
-use std::collections::HashMap;
+use dashmap::DashMap;
 
 use crate::eventsource::source::Message;
 use crate::eventsource::source::GEContext;
@@ -10,7 +10,7 @@ use crate::os::window_manager::start_window_manager;
 
 #[allow(dead_code)]
 fn update() {
-    let mut context = GEContext { source: HashMap::new() };
+    let mut context = GEContext { source: DashMap::new() };
     context.publish_message(
         "foo".to_string(),
         Message { message: "message".to_string() } 
@@ -28,7 +28,7 @@ fn update() {
     
     println!("hashmap: {:?}", context.source);
 
-    let message = context.pop_message("foo".to_string());
+    let message = context.get_message("foo".to_string());
 
     match message {
         Some(message) => println!("{}", message.message),

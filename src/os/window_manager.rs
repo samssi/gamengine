@@ -9,6 +9,8 @@ fn report_run_count(count: i32) {
 }
 
 pub fn start_window_manager() {
+    println!("Starting window manager!");
+
     use glfw::fail_on_errors;
     let mut glfw = glfw::init(fail_on_errors!()).unwrap();
 

@@ -2,6 +2,7 @@ mod eventsource;
 mod graphics;
 mod os;
 
+use std::thread;
 use dashmap::DashMap;
 
 use crate::eventsource::source::Message;
@@ -40,6 +41,9 @@ fn update() {
 }
 
 fn main() {
-    update();
-    start_window_manager();
+    let message_thread = thread::spawn(|| { update() });
+    let window_manager_thread = thread::spawn(|| { start_window_manager() });
+
+    message_thread.join().unwrap();
+    window_manager_thread.join().unwrap();    
 }

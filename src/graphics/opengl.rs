@@ -15,7 +15,13 @@ fn draw_entity() {
 
 }
 
+fn print_fps(delta_time: u128) {
+    if delta_time > 0 {
+        println!("fps: {:?}", 1000 / delta_time);
+    }
+}
+
 pub fn gl_render(delta_time: u128) {
-    println!("fps: {:?}", delta_time * 1000);
+    print_fps(delta_time);
     draw_entity();
 }

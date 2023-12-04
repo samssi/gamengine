@@ -1,12 +1,10 @@
 use glfw::Action;
-use glfw::{Context, Key, Window, WindowEvent, flush_messages, GlfwReceiver, PWindow};
+use glfw::{Context, Key, WindowEvent, GlfwReceiver, PWindow};
+
+use crate::graphics::opengl::{gl_render, gl_init};
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
-
-fn report_run_count(count: i32) {
-    println!("Running... Count {}", count)
-}
 
 fn process_events(window: &mut PWindow, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
     for (_, event) in glfw::flush_messages(&receiver) {
@@ -39,13 +37,9 @@ pub fn start_window_manager() {
 
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
-        // let mut count = 0;
-
         while !window.should_close() {
-            unsafe {
-                gl::ClearColor(0.2, 0.3, 0.3, 1.0);
-                gl::Clear(gl::COLOR_BUFFER_BIT)
-            }
+            gl_init();
+            gl_render();
 
             window.swap_buffers();
             glfw.poll_events();

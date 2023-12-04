@@ -15,7 +15,7 @@ fn draw_entity() {
 
 }
 
-pub fn gl_render() {
-    println!("OpenGL rendering graphics...");
+pub fn gl_render(delta_time: u128) {
+    println!("fps: {:?}", delta_time * 1000);
     draw_entity();
 }

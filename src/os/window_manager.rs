@@ -1,3 +1,4 @@
+use std::time::{SystemTime, UNIX_EPOCH};
 use glfw::Action;
 use glfw::{Context, Key, WindowEvent, GlfwReceiver, PWindow};
 
@@ -37,9 +38,18 @@ pub fn start_window_manager() {
 
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
+        // TODO: handle error if time goes backwards
+        let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+
+
         while !window.should_close() {
+            let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+            let delta_time = current_time - previous_time;
+
+            previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+            
             gl_init();
-            gl_render();
+            gl_render(delta_time);
 
             window.swap_buffers();
             glfw.poll_events();

@@ -1,11 +1,23 @@
 use glfw::Action;
-use glfw::{Context, Key};
+use glfw::{Context, Key, Window, WindowEvent, flush_messages, GlfwReceiver, PWindow};
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
 fn report_run_count(count: i32) {
     println!("Running... Count {}", count)
+}
+
+fn process_events(window: &mut PWindow, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
+    for (_, event) in glfw::flush_messages(&receiver) {
+        println!("{:?}", event);
+        match event {
+            glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => {
+                window.set_should_close(true)
+            },
+        _ => {},
+        }
+    }
 }
 
 pub fn start_window_manager() {
@@ -30,19 +42,14 @@ pub fn start_window_manager() {
         // let mut count = 0;
 
         while !window.should_close() {
-            // count += 1;
-            // report_run_count(count);
+            unsafe {
+                gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+                gl::Clear(gl::COLOR_BUFFER_BIT)
+            }
+
             window.swap_buffers();
             glfw.poll_events();
 
-            for (_, event) in glfw::flush_messages(&events) {
-                println!("{:?}", event);
-                match event {
-                    glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => {
-                        window.set_should_close(true)
-                    },
-                _ => {},
-            }
+            process_events(&mut window, &events)
         }
-    }
 }

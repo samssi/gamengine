@@ -9,6 +9,7 @@ use crate::eventsource::source::Message;
 use crate::eventsource::source::GEContext;
 use crate::os::window_manager::start_window_manager;
 
+
 #[allow(dead_code)]
 fn update() {
     let mut context = GEContext { source: DashMap::new() };

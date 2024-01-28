@@ -76,6 +76,9 @@ fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuin
 
         gl::LinkProgram(program);
 
+        gl::DeleteShader(vertex_shader);
+        gl::DeleteShader(fragment_shader);
+
         let mut success = gl::FALSE as GLint;
         gl::GetProgramiv(program, gl::LINK_STATUS, &mut success);
 
@@ -91,12 +94,10 @@ fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuin
             gl::GetProgramInfoLog(program, len, ptr::null_mut(), buffer.as_mut_ptr() as *mut GLchar);
             Err(String::from_utf8_lossy(&buffer).into_owned())
         }
-
-        // TODO: delete shaders
     }
 }
 
-fn create_vao(verticies: [f32; 9]) -> GLuint {
+fn create_vao(vertices: [f32; 9]) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
@@ -108,9 +109,9 @@ fn create_vao(verticies: [f32; 9]) -> GLuint {
 
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
         gl::BufferData(gl::ARRAY_BUFFER,
-                            (verticies.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                             &verticies[0] as *const f32 as *const c_void,
-                                gl::STATIC_DRAW);
+                       (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+                       &vertices[0] as *const f32 as *const c_void,
+                       gl::STATIC_DRAW);
 
         gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 3 * mem::size_of::<GLfloat>() as GLsizei, ptr::null());
         gl::EnableVertexAttribArray(0);
@@ -135,9 +136,6 @@ fn draw_entity() {
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);
 
-        //gl::ClearColor(0.2, 0.3 , 0.3, 1.0);
-        //gl::Clear(gl::COLOR_BUFFER_BIT);
-
         let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap());
         gl::UseProgram(program.unwrap());
 
@@ -149,13 +147,15 @@ fn draw_entity() {
     }
 }
 
+
+#[allow(dead_code)]
 fn print_fps(delta_time: u128) {
     if delta_time > 0 {
         println!("fps: {:?}", 1000 / delta_time);
     }
 }
 
-pub fn gl_render(delta_time: u128) {
+pub fn gl_render(_delta_time: u128) {
     //print_fps(delta_time);
     draw_entity();
 }

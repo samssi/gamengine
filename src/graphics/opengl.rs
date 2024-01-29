@@ -97,7 +97,7 @@ fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuin
     }
 }
 
-fn create_vao(vertices: [f32; 9]) -> GLuint {
+fn create_vao(vertices: Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
@@ -123,9 +123,9 @@ fn create_vao(vertices: [f32; 9]) -> GLuint {
 }
 
 const TRIANGLE: [f32; 9] =
-    [  -0.5, -0.5, 0.0,
-        0.5, -0.5, 0.0,
-        -0.5, 0.5, 0.0
+    [  -1.0, -0.5, 0.0,
+        1.0, -0.5, 0.0,
+        0.0, 0.5, 0.0
     ];
 
 fn draw_entity() {
@@ -139,7 +139,8 @@ fn draw_entity() {
         let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap());
         gl::UseProgram(program.unwrap());
 
-        let vao = create_vao(TRIANGLE);
+        //let vao = create_vao(TRIANGLE);
+        let vao = create_vao(TRIANGLE.to_vec());
         gl::BindVertexArray(vao);
 
         gl::DrawArrays(gl::TRIANGLES, 0, 3);

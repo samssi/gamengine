@@ -1,6 +1,7 @@
 use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
+use crate::entity::entity::Entity3d;
 
 // TODO: make globally configurable
 const HEIGHT: i32 = 800;
@@ -122,13 +123,7 @@ fn create_vao(vertices: Vec<f32>) -> GLuint {
     vao
 }
 
-const TRIANGLE: [f32; 9] =
-    [  -1.0, -0.5, 0.0,
-        1.0, -0.5, 0.0,
-        0.0, 0.5, 0.0
-    ];
-
-fn draw_entity() {
+fn draw_entity(entity_3D: Entity3d) {
     unsafe {
         let vertex_shader = compile_shader(VERTEX_SHADER_SOURCE, gl::VERTEX_SHADER);
         let fragment_shader = compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
@@ -140,7 +135,7 @@ fn draw_entity() {
         gl::UseProgram(program.unwrap());
 
         //let vao = create_vao(TRIANGLE);
-        let vao = create_vao(TRIANGLE.to_vec());
+        let vao = create_vao(entity_3D.points);
         gl::BindVertexArray(vao);
 
         gl::DrawArrays(gl::TRIANGLES, 0, 3);
@@ -158,5 +153,11 @@ fn print_fps(delta_time: u128) {
 
 pub fn gl_render(_delta_time: u128) {
     //print_fps(delta_time);
-    draw_entity();
+    const TRIANGLE: [f32; 9] =
+        [  -1.0, -0.5, 0.0,
+            1.0, -0.5, 0.0,
+            0.0, 0.5, 0.0
+        ];
+
+    draw_entity(Entity3d::new(TRIANGLE.to_vec()));
 }

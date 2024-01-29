@@ -1,6 +1,7 @@
 mod eventsource;
 mod graphics;
 mod os;
+mod entity;
 
 use std::thread;
 use dashmap::DashMap;

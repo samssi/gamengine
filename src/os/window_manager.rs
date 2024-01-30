@@ -3,16 +3,16 @@ use glfw::Action;
 use glfw::{Context, Key, WindowEvent, GlfwReceiver, PWindow};
 
 use crate::graphics::opengl::{gl_render, gl_init};
+use crate::io::keyboard::handle_keyboard_events;
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
 fn process_events(window: &mut PWindow, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
     for (_, event) in glfw::flush_messages(&receiver) {
-        println!("{:?}", event);
         match event {
-            glfw::WindowEvent::Key(Key::Escape, _, Action::Press, _) => {
-                window.set_should_close(true)
+            glfw::WindowEvent::Key(key, _, action, _) => {
+                handle_keyboard_events(window, key, action)
             },
         _ => {},
         }

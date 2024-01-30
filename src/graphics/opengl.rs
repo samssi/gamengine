@@ -151,13 +151,14 @@ fn print_fps(delta_time: u128) {
     }
 }
 
+const TRIANGLE: [f32; 9] =
+    [  -1.0, -0.5, 0.0,
+        1.0, -0.5, 0.0,
+        0.0, 0.5, 0.0
+    ];
+
 pub fn gl_render(_delta_time: u128) {
     //print_fps(delta_time);
-    const TRIANGLE: [f32; 9] =
-        [  -1.0, -0.5, 0.0,
-            1.0, -0.5, 0.0,
-            0.0, 0.5, 0.0
-        ];
 
     draw_entity(Entity3d::new(TRIANGLE.to_vec()));
 }

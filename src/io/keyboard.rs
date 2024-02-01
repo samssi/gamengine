@@ -1,5 +1,5 @@
+use std::collections::HashMap;
 use glfw::{Action, Key, PWindow};
-use crate::io::keyboard::Direction::{E, N, S, W};
 
 fn handle_window_control_keyboard_events(window: &mut PWindow, key: Key, action: Action) {
     match (key, action) {
@@ -10,12 +10,12 @@ fn handle_window_control_keyboard_events(window: &mut PWindow, key: Key, action:
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Direction {
-    N,
-    S,
-    E,
-    W
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
 }
 
 fn string_to_key(key_str: &str) -> Option<Key> {
@@ -28,22 +28,32 @@ fn string_to_key(key_str: &str) -> Option<Key> {
     }
 }
 
-fn handle_engine_keyboard_press_events(key: Key) -> Option<Direction> {
+fn key_to_string(key: Key) -> Option<String> {
     match key {
-        (Key::W) => {
-            return Some(N);
-        },
-        (Key::S) => {
-            return Some(S);
-        },
-        (Key::D) => {
-            return Some(E);
-        },
-        (Key::A) => {
-            return Some(W);
-        },
+        (Key::W) => Some(String::from("w")),
+        (Key::A) => Some(String::from("a")),
+        (Key::S) => Some(String::from("s")),
+        (Key::D) => Some(String::from("d")),
         _ => None
     }
+}
+
+
+fn create_keymap() -> HashMap<String, Direction> {
+    let mut map = HashMap::new();
+    map.insert(String::from("w"), Direction::UP);
+    map.insert(String::from("s"), Direction::DOWN);
+    map.insert(String::from("a"), Direction::LEFT);
+    map.insert(String::from("d"), Direction::RIGHT);
+    map
+}
+
+fn handle_engine_keyboard_press_events(key: Key) -> Option<Direction> {
+    // TODO: temp, create a context
+    let keymap = create_keymap();
+    let key_as_string = key_to_string(key);
+
+    key_as_string.and_then(|key| keymap.get(&key).cloned())
 }
 
 pub fn handle_keyboard_events(window: &mut PWindow, key: Key, action: Action) {

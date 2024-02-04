@@ -30,7 +30,7 @@ fn update() {
         Message { message: "message2".to_string() } 
     );
     
-    println!("hashmap: {:?}", context.source);
+    /*println!("hashmap: {:?}", context.source);
 
     let message = context.pop_message("foo".to_string());
 
@@ -40,7 +40,7 @@ fn update() {
         None => println!("none")
     }
 
-    println!("hashmap: {:?}", context.source);
+    println!("hashmap: {:?}", context.source);*/
 }
 
 fn main() {

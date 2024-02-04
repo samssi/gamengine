@@ -2,6 +2,7 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use crate::entity::entity::Entity3d;
+use crate::graphics::calculations::apply_3d_transformations;
 
 // TODO: make globally configurable
 const HEIGHT: i32 = 800;
@@ -12,6 +13,23 @@ const VERTEX_SHADER_SOURCE: &str = r#"
     layout (location = 0) in vec3 aPos;
     void main() {
         gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    }
+"#;
+
+fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLint {
+    let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
+    unsafe {
+        gl::GetAttribLocation(program, attribute_name_cstring.as_ptr())
+    }
+}
+
+const VERTEX_SHADER_SOURCE_2: &str = r#"
+    #version 330 core
+    in vec4 a_position;
+    uniform mat4 u_matrix;
+
+    void main() {
+        gl_Position = u_matrix * a_position;
     }
 "#;
 
@@ -98,7 +116,7 @@ fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuin
     }
 }
 
-fn create_vao(vertices: Vec<f32>) -> GLuint {
+fn create_vao(vertices: &Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
@@ -117,25 +135,42 @@ fn create_vao(vertices: Vec<f32>) -> GLuint {
         gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 3 * mem::size_of::<GLfloat>() as GLsizei, ptr::null());
         gl::EnableVertexAttribArray(0);
 
+        /*
         gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-        gl::BindVertexArray(0);
+        gl::BindVertexArray(0);*/
     }
     vao
 }
 
-fn draw_entity(entity_3D: Entity3d) {
+fn set_geometry(entity: &Entity3d, program: GLuint) {
     unsafe {
-        let vertex_shader = compile_shader(VERTEX_SHADER_SOURCE, gl::VERTEX_SHADER);
+        let vao = create_vao(&entity.points);
+
+    }
+}
+
+fn draw_entity(entity_3d: &Entity3d) {
+    unsafe {
+        let vertex_shader = compile_shader(VERTEX_SHADER_SOURCE_2, gl::VERTEX_SHADER);
         let fragment_shader = compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
+        let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap()).unwrap();
 
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);
-
-        let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap());
-        gl::UseProgram(program.unwrap());
+        gl::UseProgram(program);
 
         //let vao = create_vao(TRIANGLE);
-        let vao = create_vao(entity_3D.points);
+        let vao = create_vao(&entity_3d.points);
+
+        // TODO: calculations
+        let final_matrix = apply_3d_transformations(&entity_3d);
+
+        // gl::UniformMatrix4fv(uniform_location, 1, gl::FALSE, matrix_data.as_ptr());
+        let matrix_data: Vec<f32> = final_matrix.as_slice().to_owned();
+        // let count = matrix_data.len() as GLsizei;
+
+        gl::UniformMatrix4fv(get_attrib_location(program, "u_matrix"), 1, gl::FALSE, matrix_data.as_ptr());
+
         gl::BindVertexArray(vao);
 
         gl::DrawArrays(gl::TRIANGLES, 0, 3);
@@ -159,6 +194,6 @@ const TRIANGLE: [f32; 9] =
 
 pub fn gl_render(_delta_time: u128) {
     //print_fps(delta_time);
-
-    draw_entity(Entity3d::new(TRIANGLE.to_vec()));
+    let entity_3d = Entity3d::new(TRIANGLE.to_vec());
+    draw_entity(&entity_3d);
 }

@@ -1,14 +1,6 @@
 use std::collections::HashMap;
 use glfw::{Action, Key, PWindow};
-
-fn handle_window_control_keyboard_events(window: &mut PWindow, key: Key, action: Action) {
-    match (key, action) {
-        (Key::Escape, Action::Press) => {
-            window.set_should_close(true);
-        },
-        _ => {}
-    }
-}
+use crate::state::context::WindowManagerContext;
 
 #[derive(Debug, Clone)]
 pub enum Direction {
@@ -48,6 +40,15 @@ fn create_keymap() -> HashMap<String, Direction> {
     map
 }
 
+fn handle_window_control_keyboard_events(context: &mut WindowManagerContext, key: Key, action: Action) {
+    match (key, action) {
+        (Key::Escape, Action::Press) => {
+            &context.window.set_should_close(true);
+        },
+        _ => {}
+    }
+}
+
 fn handle_engine_keyboard_press_events(key: Key) -> Option<Direction> {
     // TODO: temp, create a context
     let keymap = create_keymap();
@@ -56,8 +57,8 @@ fn handle_engine_keyboard_press_events(key: Key) -> Option<Direction> {
     key_as_string.and_then(|key| keymap.get(&key).cloned())
 }
 
-pub fn handle_keyboard_events(window: &mut PWindow, key: Key, action: Action) {
-    handle_window_control_keyboard_events(window, key, action);
+pub fn handle_keyboard_events(context: &mut WindowManagerContext, key: Key, action: Action) {
+    handle_window_control_keyboard_events(context, key, action);
     match action {
         (Action::Press) => {
             println!("Direction: {:?} pressed", handle_engine_keyboard_press_events(key))

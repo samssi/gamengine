@@ -1,4 +1,4 @@
-mod eventsource;
+mod state;
 mod graphics;
 mod os;
 mod entity;
@@ -7,8 +7,8 @@ mod io;
 use std::thread;
 use dashmap::DashMap;
 
-use crate::eventsource::source::Message;
-use crate::eventsource::source::GEContext;
+use crate::state::messaging::Message;
+use crate::state::messaging::GEContext;
 use crate::os::window_manager::start_window_manager;
 
 

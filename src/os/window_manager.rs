@@ -1,18 +1,18 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-use glfw::Action;
-use glfw::{Context, Key, WindowEvent, GlfwReceiver, PWindow};
+use glfw::{Context, WindowEvent, GlfwReceiver, Action, Key, PWindow};
 
 use crate::graphics::opengl::{gl_render, gl_init};
 use crate::io::keyboard::handle_keyboard_events;
+use crate::state::context::WindowManagerContext;
 
 const SCREEN_WIDTH: u32 = 800;
 const SCREEN_HEIGHT: u32 = 600;
 
-fn process_events(window: &mut PWindow, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
+fn process_events<'context>(context: &'context mut WindowManagerContext, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
     for (_, event) in glfw::flush_messages(&receiver) {
         match event {
-            glfw::WindowEvent::Key(key, _, action, _) => {
-                handle_keyboard_events(window, key, action)
+            WindowEvent::Key(key, _, action, _) => {
+                handle_keyboard_events(context, key, action)
             },
         _ => {},
         }
@@ -32,28 +32,29 @@ pub fn start_window_manager() {
         glfw.create_window(SCREEN_WIDTH, SCREEN_HEIGHT, "GamEngine", glfw::WindowMode::Windowed)
             .expect("Failed to create GLFW window");
 
-        window.make_current();
-        window.set_key_polling(true);
-        window.set_framebuffer_size_polling(true);
+    window.make_current();
+    window.set_key_polling(true);
+    window.set_framebuffer_size_polling(true);
 
-        gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
+    gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
-        // TODO: handle error if time goes backwards
-        let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+    // TODO: handle error if time goes backwards
+    let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
 
-        while !window.should_close() {
-            let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-            let delta_time = current_time - previous_time;
+    while !window.should_close() {
+        let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+        let delta_time = current_time - previous_time;
 
-            previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-            
-            gl_init();
-            gl_render(delta_time);
+        previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-            window.swap_buffers();
-            glfw.poll_events();
+        gl_init();
+        gl_render(delta_time);
 
-            process_events(&mut window, &events)
-        }
+        window.swap_buffers();
+        glfw.poll_events();
+
+        let mut context = WindowManagerContext::new(&mut window);
+        process_events(&mut context, &events)
+    }
 }

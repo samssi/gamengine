@@ -20,23 +20,22 @@ fn string_to_key(key_str: &str) -> Option<Key> {
     }
 }
 
-fn key_to_string(key: Key) -> Option<String> {
+fn key_to_string<'keytostr>(key: Key) -> Option<&'keytostr str> {
     match key {
-        (Key::W) => Some(String::from("w")),
-        (Key::A) => Some(String::from("a")),
-        (Key::S) => Some(String::from("s")),
-        (Key::D) => Some(String::from("d")),
+        (Key::W) => Some("w"),
+        (Key::A) => Some("a"),
+        (Key::S) => Some("s"),
+        (Key::D) => Some("d"),
         _ => None
     }
 }
 
-
-fn create_keymap() -> HashMap<String, Direction> {
+fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, Direction> {
     let mut map = HashMap::new();
-    map.insert(String::from("w"), Direction::UP);
-    map.insert(String::from("s"), Direction::DOWN);
-    map.insert(String::from("a"), Direction::LEFT);
-    map.insert(String::from("d"), Direction::RIGHT);
+    map.insert("w", Direction::UP);
+    map.insert("s", Direction::DOWN);
+    map.insert("a", Direction::LEFT);
+    map.insert("d", Direction::RIGHT);
     map
 }
 

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use glfw::{Action, Key, PWindow};
+use glfw::{Action, Key};
 use crate::state::context::WindowManagerContext;
 
 #[derive(Debug, Clone)]
@@ -22,15 +22,15 @@ fn string_to_key(key_str: &str) -> Option<Key> {
 
 fn key_to_string<'keytostr>(key: Key) -> Option<&'keytostr str> {
     match key {
-        (Key::W) => Some("w"),
-        (Key::A) => Some("a"),
-        (Key::S) => Some("s"),
-        (Key::D) => Some("d"),
+        Key::W => Some("w"),
+        Key::A => Some("a"),
+        Key::S => Some("s"),
+        Key::D => Some("d"),
         _ => None
     }
 }
 
-fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, Direction> {
+pub fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, Direction> {
     let mut map = HashMap::new();
     map.insert("w", Direction::UP);
     map.insert("s", Direction::DOWN);
@@ -42,25 +42,23 @@ fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, Direction> {
 fn handle_window_control_keyboard_events(context: &mut WindowManagerContext, key: Key, action: Action) {
     match (key, action) {
         (Key::Escape, Action::Press) => {
-            &context.window.set_should_close(true);
+            _ = &context.window.set_should_close(true);
         },
         _ => {}
     }
 }
 
-fn handle_engine_keyboard_press_events(key: Key) -> Option<Direction> {
-    // TODO: temp, create a context
-    let keymap = create_keymap();
+fn handle_engine_keyboard_press_events(context: &mut WindowManagerContext, key: Key) -> Option<Direction> {
     let key_as_string = key_to_string(key);
 
-    key_as_string.and_then(|key| keymap.get(&key).cloned())
+    key_as_string.and_then(|key| context.keymap.get(&key).cloned())
 }
 
 pub fn handle_keyboard_events(context: &mut WindowManagerContext, key: Key, action: Action) {
     handle_window_control_keyboard_events(context, key, action);
     match action {
-        (Action::Press) => {
-            println!("Direction: {:?} pressed", handle_engine_keyboard_press_events(key))
+        Action::Press => {
+            println!("Direction: {:?} pressed", handle_engine_keyboard_press_events(context, key))
         },
         _ => {}
     }

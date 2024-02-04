@@ -1,8 +1,8 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-use glfw::{Context, WindowEvent, GlfwReceiver, Action, Key, PWindow};
+use glfw::{Context, WindowEvent, GlfwReceiver};
 
 use crate::graphics::opengl::{gl_render, gl_init};
-use crate::io::keyboard::handle_keyboard_events;
+use crate::io::keyboard::{create_keymap, handle_keyboard_events};
 use crate::state::context::WindowManagerContext;
 
 const SCREEN_WIDTH: u32 = 800;
@@ -54,7 +54,8 @@ pub fn start_window_manager() {
         window.swap_buffers();
         glfw.poll_events();
 
-        let mut context = WindowManagerContext::new(&mut window);
+        let keymap = create_keymap();
+        let mut context = WindowManagerContext::new(&mut window, &keymap);
         process_events(&mut context, &events)
     }
 }

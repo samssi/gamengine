@@ -152,18 +152,6 @@ fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
 
         let attrib_location = get_attrib_location(program, "a_position");
         gl::EnableVertexAttribArray(attrib_location);
-        /*gl::VertexAttribPointer(
-            0,                              // attribute 0 corresponds to layout(location = 0) in the vertex shader
-            3,                              // size (number of components)
-            gl::FLOAT,                      // type
-            gl::FALSE,                      // normalized
-            (3 * mem::size_of::<GLfloat>()) as GLsizei, // stride (byte offset between consecutive generic vertex attributes)
-            ptr::null(),                    // offset of the first component
-        );*/
-
-
-        // gl::GetAttribLocation(program, attribute_name_cstring.as_ptr())
-
         gl::VertexAttribPointer(attrib_location,
                                 3,                              // size (number of components)
                                 gl::FLOAT,                      // type

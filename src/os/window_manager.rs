@@ -5,8 +5,8 @@ use crate::graphics::opengl::{gl_render, gl_init};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
 use crate::state::context::WindowManagerContext;
 
-const SCREEN_WIDTH: u32 = 800;
-const SCREEN_HEIGHT: u32 = 600;
+const SCREEN_WIDTH: u32 = 1800;
+const SCREEN_HEIGHT: u32 = 1000;
 
 fn process_events<'context>(context: &'context mut WindowManagerContext, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
     for (_, event) in glfw::flush_messages(&receiver) {

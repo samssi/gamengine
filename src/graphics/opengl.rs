@@ -16,10 +16,23 @@ const VERTEX_SHADER_SOURCE: &str = r#"
     }
 "#;
 
-fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLint {
+fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
     let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
     unsafe {
-        gl::GetAttribLocation(program, attribute_name_cstring.as_ptr())
+        let location = gl::GetAttribLocation(program, attribute_name_cstring.as_ptr());
+        if location != -1 {
+            location as GLuint
+        }
+        else {
+            panic!("Failed to retrieve attrib location")
+        }
+    }
+}
+
+fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
+    let attribute_name_cstring = CString::new(uniform_name).expect("CString conversion failed");
+    unsafe {
+        gl::GetUniformLocation(program, attribute_name_cstring.as_ptr())
     }
 }
 
@@ -116,7 +129,7 @@ fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuin
     }
 }
 
-fn create_vao(vertices: &Vec<f32>) -> GLuint {
+fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
@@ -126,27 +139,45 @@ fn create_vao(vertices: &Vec<f32>) -> GLuint {
 
         gl::BindVertexArray(vao);
 
+        // println!("{}", vertices.len());
+
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
-        gl::BufferData(gl::ARRAY_BUFFER,
-                       (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                       &vertices[0] as *const f32 as *const c_void,
-                       gl::STATIC_DRAW);
 
-        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 3 * mem::size_of::<GLfloat>() as GLsizei, ptr::null());
-        gl::EnableVertexAttribArray(0);
+        gl::BufferData(
+            gl::ARRAY_BUFFER,
+            (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+            vertices.as_ptr() as *const c_void,
+            gl::STATIC_DRAW,
+        );
 
-        /*
+        let attrib_location = get_attrib_location(program, "a_position");
+        gl::EnableVertexAttribArray(attrib_location);
+        /*gl::VertexAttribPointer(
+            0,                              // attribute 0 corresponds to layout(location = 0) in the vertex shader
+            3,                              // size (number of components)
+            gl::FLOAT,                      // type
+            gl::FALSE,                      // normalized
+            (3 * mem::size_of::<GLfloat>()) as GLsizei, // stride (byte offset between consecutive generic vertex attributes)
+            ptr::null(),                    // offset of the first component
+        );*/
+
+
+        // gl::GetAttribLocation(program, attribute_name_cstring.as_ptr())
+
+        gl::VertexAttribPointer(attrib_location,
+                                3,                              // size (number of components)
+                                gl::FLOAT,                      // type
+                                gl::FALSE,                      // normalized
+                                (3 * mem::size_of::<GLfloat>()) as GLsizei, // stride (byte offset between consecutive generic vertex attributes)
+                                ptr::null());
+
+
+
+        // Unbind VBO and VAO (optional, uncomment if needed)
         gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-        gl::BindVertexArray(0);*/
+        gl::BindVertexArray(0);
     }
     vao
-}
-
-fn set_geometry(entity: &Entity3d, program: GLuint) {
-    unsafe {
-        let vao = create_vao(&entity.points);
-
-    }
 }
 
 fn draw_entity(entity_3d: &Entity3d) {
@@ -159,21 +190,18 @@ fn draw_entity(entity_3d: &Entity3d) {
         // gl::Enable(gl::DEPTH_TEST);
         gl::UseProgram(program);
 
-        //let vao = create_vao(TRIANGLE);
-        let vao = create_vao(&entity_3d.points);
+        let vao = create_vao(program, &entity_3d.points);
 
-        // TODO: calculations
         let final_matrix = apply_3d_transformations(&entity_3d);
+        let matrix_data = final_matrix.as_slice();
 
-        // gl::UniformMatrix4fv(uniform_location, 1, gl::FALSE, matrix_data.as_ptr());
-        let matrix_data: Vec<f32> = final_matrix.as_slice().to_owned();
-        // let count = matrix_data.len() as GLsizei;
-
-        gl::UniformMatrix4fv(get_attrib_location(program, "u_matrix"), 1, gl::FALSE, matrix_data.as_ptr());
+        let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
+        gl::UniformMatrix4fv(get_uniform_location(program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
 
         gl::BindVertexArray(vao);
 
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+        let points_len: GLsizei = entity_3d.points.len() as GLsizei;
+        gl::DrawArrays(gl::TRIANGLES, 0, points_len);
 
     }
 }
@@ -185,12 +213,57 @@ fn print_fps(delta_time: u128) {
         println!("fps: {:?}", 1000 / delta_time);
     }
 }
+const SQUARE: [f32; 12] = [
+    -0.5, -0.5,  0.0,
+    0.5, -0.5,  0.0,
+    0.5,  0.5,  0.0,
+    -0.5,  0.5,  0.0,
+];
+
+const CUBE: [f32; 72] = [
+    // Front face
+    -0.5, -0.5,  0.5,
+    0.5, -0.5,  0.5,
+    0.5,  0.5,  0.5,
+    -0.5,  0.5,  0.5,
+
+    // Back face
+    -0.5, -0.5, -0.5,
+    0.5, -0.5, -0.5,
+    0.5,  0.5, -0.5,
+    -0.5,  0.5, -0.5,
+
+    // Top face
+    -0.5,  0.5,  0.5,
+    0.5,  0.5,  0.5,
+    0.5,  0.5, -0.5,
+    -0.5,  0.5, -0.5,
+
+    // Bottom face
+    -0.5, -0.5,  0.5,
+    0.5, -0.5,  0.5,
+    0.5, -0.5, -0.5,
+    -0.5, -0.5, -0.5,
+
+    // Right face
+    0.5, -0.5,  0.5,
+    0.5,  0.5,  0.5,
+    0.5,  0.5, -0.5,
+    0.5, -0.5, -0.5,
+
+    // Left face
+    -0.5, -0.5,  0.5,
+    -0.5,  0.5,  0.5,
+    -0.5,  0.5, -0.5,
+    -0.5, -0.5, -0.5,
+];
 
 const TRIANGLE: [f32; 9] =
-    [  -1.0, -0.5, 0.0,
-        1.0, -0.5, 0.0,
-        0.0, 0.5, 0.0
+    [  -0.4, -0.2, 0.0,
+        0.4, -0.2, 0.0,
+        0.0, 0.2, 0.0
     ];
+
 
 pub fn gl_render(_delta_time: u128) {
     //print_fps(delta_time);

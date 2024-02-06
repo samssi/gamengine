@@ -3,11 +3,15 @@ use glfw::{Action, Key};
 use crate::state::context::WindowManagerContext;
 
 #[derive(Debug, Clone)]
-pub enum Direction {
+pub enum KeyActivity {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    ROTATE_CLOCKWISE,
+    ROTATE_COUNTER_CLOCKWISE,
+    SCALE_ALL_UP,
+    SCALE_ALL_DOWN
 }
 
 fn string_to_key(key_str: &str) -> Option<Key> {
@@ -16,6 +20,10 @@ fn string_to_key(key_str: &str) -> Option<Key> {
         "a" => Some(Key::A),
         "s" => Some(Key::S),
         "d" => Some(Key::D),
+        "q" => Some(Key::Q),
+        "e" => Some(Key::E),
+        "keypad-add" => Some(Key::KpAdd),
+        "keypad-subtract" => Some(Key::KpSubtract),
         _ => None
     }
 }
@@ -26,16 +34,24 @@ fn key_to_string<'keytostr>(key: Key) -> Option<&'keytostr str> {
         Key::A => Some("a"),
         Key::S => Some("s"),
         Key::D => Some("d"),
+        Key::Q => Some("q"),
+        Key::E => Some("e"),
+        Key::KpAdd => Some("keypad-add"),
+        Key::KpSubtract=> Some("keypad-subtract"),
         _ => None
     }
 }
 
-pub fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, Direction> {
+pub fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, KeyActivity> {
     let mut map = HashMap::new();
-    map.insert("w", Direction::UP);
-    map.insert("s", Direction::DOWN);
-    map.insert("a", Direction::LEFT);
-    map.insert("d", Direction::RIGHT);
+    map.insert("w", KeyActivity::UP);
+    map.insert("s", KeyActivity::DOWN);
+    map.insert("a", KeyActivity::LEFT);
+    map.insert("d", KeyActivity::RIGHT);
+    map.insert("e", KeyActivity::ROTATE_CLOCKWISE);
+    map.insert("q", KeyActivity::ROTATE_COUNTER_CLOCKWISE);
+    map.insert("keypad-add", KeyActivity::SCALE_ALL_UP);
+    map.insert("keypad-subtract", KeyActivity::SCALE_ALL_DOWN);
     map
 }
 
@@ -55,21 +71,47 @@ fn handle_engine_keyboard_press_events(context: &mut WindowManagerContext, key: 
     println!("Direction: {:?} pressed", direction);
 
     match direction {
-        Some(Direction::LEFT) => {
+        Some(KeyActivity::LEFT) => {
             let x_position = context.entity.transform.position.x;
             context.entity.transform.position.x = x_position - 0.1;
         }
-        Some(Direction::RIGHT) => {
+        Some(KeyActivity::RIGHT) => {
             let x_position = context.entity.transform.position.x;
             context.entity.transform.position.x = x_position + 0.1;
         }
-        Some(Direction::UP) => {
+        Some(KeyActivity::UP) => {
             let y_position = context.entity.transform.position.y;
             context.entity.transform.position.y = y_position + 0.1;
         }
-        Some(Direction::DOWN) => {
+        Some(KeyActivity::DOWN) => {
             let y_position = context.entity.transform.position.y;
             context.entity.transform.position.y = y_position - 0.1;
+        }
+        Some(KeyActivity::ROTATE_CLOCKWISE) => {
+            let rotation = context.entity.transform.rotation.z;
+            context.entity.transform.rotation.z = rotation + 0.1;
+        }
+        Some(KeyActivity::ROTATE_COUNTER_CLOCKWISE) => {
+            let rotation = context.entity.transform.rotation.z;
+            context.entity.transform.rotation.z = rotation - 0.1;
+        }
+        Some(KeyActivity::SCALE_ALL_UP) => {
+            let scale_x = context.entity.transform.scale.x;
+            let scale_y = context.entity.transform.scale.y;
+            let scale_z = context.entity.transform.scale.z;
+
+            context.entity.transform.scale.x = scale_x + 0.1;
+            context.entity.transform.scale.y = scale_y + 0.1;
+            context.entity.transform.scale.z = scale_z + 0.1;
+        }
+        Some(KeyActivity::SCALE_ALL_DOWN) => {
+            let scale_x = context.entity.transform.scale.x;
+            let scale_y = context.entity.transform.scale.y;
+            let scale_z = context.entity.transform.scale.z;
+
+            context.entity.transform.scale.x = scale_x - 0.1;
+            context.entity.transform.scale.y = scale_y - 0.1;
+            context.entity.transform.scale.z = scale_z - 0.1;
         }
         _ => {}
     }

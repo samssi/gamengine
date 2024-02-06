@@ -10,13 +10,9 @@ pub const TRIANGLE: [f32; 9] =
         0.0, 0.2, 0.0
     ];
 
-pub struct Rotation {
-// Degress struct
-}
-
 pub struct Transform {
     pub position: Vector3d,
-    //rotation: Rotation,
+    pub rotation: Vector3d,
     pub scale: Vector3d
 }
 
@@ -36,10 +32,15 @@ impl Entity3d {
                     z: 0.0
                 },
                 scale: Vector3d {
+                    x: 1.0,
+                    y: 1.0,
+                    z: 1.0
+                },
+                rotation: Vector3d {
                     x: 0.0,
                     y: 0.0,
                     z: 0.0
-                },
+                }
             }
         }
     }

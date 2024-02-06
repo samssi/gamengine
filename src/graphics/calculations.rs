@@ -8,14 +8,19 @@ pub fn apply_3d_transformations(entity_3d: &Entity3d) -> Matrix4<f32> {
     let target = Point3::new(0.0, 0.0, 0.0);
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 
-    // Translation
     let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);
     let translation_matrix = Matrix4::new_translation(&translation_vector);
+
+    let rotation_vector = Vector3::new(entity_3d.transform.rotation.x, entity_3d.transform.rotation.y, entity_3d.transform.rotation.z);
+    let rotation_matrix = Matrix4::from_scaled_axis(rotation_vector);
+
+    let scaling_vector = &Vector3::new(entity_3d.transform.scale.x, entity_3d.transform.scale.y, entity_3d.transform.scale.z);
+    let scale_matrix = Matrix4::new_nonuniform_scaling(scaling_vector);
 
     let projection = Perspective3::new(16.0 / 9.0, 3.14 / 2.0, 1.0, 1000.0);
     let model_view = view * translation_matrix;
 
-    let model_view_projection = projection.as_matrix() * model_view;
+    let model_view_projection = projection.as_matrix() * model_view * rotation_matrix * scale_matrix;
     model_view_projection
 }
 

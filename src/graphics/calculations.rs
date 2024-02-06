@@ -2,22 +2,20 @@ use nalgebra::{Isometry3, Matrix4, Perspective3, Point3, Rotation3, Unit, Vector
 use crate::entity::entity::Entity3d;
 
 pub fn apply_3d_transformations(entity_3d: &Entity3d) -> Matrix4<f32> {
-    let model = Isometry3::new(Vector3::x(), nalgebra::zero());
-
     // Our camera looks toward the point (1.0, 0.0, 0.0).
     // It is located at (0.0, 0.0, 1.0).
     let eye = Point3::new(0.0, 0.0, 1.0);
-    let target = Point3::new(1.0, 0.0, 0.0);
-    let view = Isometry3::look_at_rh(&eye, &target, &Vector3::y());
+    let target = Point3::new(0.0, 0.0, 0.0);
+    let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
+
+    // Translation
+    let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);
+    let translation_matrix = Matrix4::new_translation(&translation_vector);
 
     let projection = Perspective3::new(16.0 / 9.0, 3.14 / 2.0, 1.0, 1000.0);
+    let model_view = view * translation_matrix;
 
-    let model_view = view * model;
-
-    // Convert everything to a `Matrix4` so that they can be combined.
-    let mat_model_view = model_view.to_homogeneous();
-
-    let model_view_projection = projection.as_matrix() * mat_model_view;
+    let model_view_projection = projection.as_matrix() * model_view;
     model_view_projection
 }
 
@@ -47,7 +45,7 @@ pub fn apply_3d_transformations_ortho(entity_3d: &Entity3d) -> Matrix4<f32> {
     let angle_of_rotation = 45.0f32.to_radians();
     let rotation_matrix = Rotation3::from_axis_angle(&axis_of_rotation, angle_of_rotation);
 
-    let model_matrix = translation_matrix; //* rotation_matrix.to_homogeneous();
+    let model_matrix = translation_matrix * rotation_matrix.to_homogeneous();
 
     let final_matrix = projection_matrix * view_matrix * model_matrix;
     final_matrix

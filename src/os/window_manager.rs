@@ -1,5 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 use glfw::{Context, WindowEvent, GlfwReceiver};
+use crate::entity::entity::{Entity3d, TRIANGLE};
 
 use crate::graphics::opengl::{gl_render, gl_init};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
@@ -40,22 +41,23 @@ pub fn start_window_manager() {
 
     // TODO: handle error if time goes backwards
     let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+    let keymap = create_keymap();
+    let mut test_entity = Entity3d::new(TRIANGLE.to_vec());
 
+    let mut context = WindowManagerContext::new(&mut window, &keymap, &mut test_entity);
 
-    while !window.should_close() {
+    while !context.window.should_close() {
         let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
         let delta_time = current_time - previous_time;
 
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
         gl_init();
-        gl_render(delta_time);
+        gl_render(&mut context, delta_time);
 
-        window.swap_buffers();
+        context.window.swap_buffers();
         glfw.poll_events();
 
-        let keymap = create_keymap();
-        let mut context = WindowManagerContext::new(&mut window, &keymap);
         process_events(&mut context, &events)
     }
 }

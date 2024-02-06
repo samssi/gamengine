@@ -48,17 +48,38 @@ fn handle_window_control_keyboard_events(context: &mut WindowManagerContext, key
     }
 }
 
-fn handle_engine_keyboard_press_events(context: &mut WindowManagerContext, key: Key) -> Option<Direction> {
+fn handle_engine_keyboard_press_events(context: &mut WindowManagerContext, key: Key) {
     let key_as_string = key_to_string(key);
 
-    key_as_string.and_then(|key| context.keymap.get(&key).cloned())
+    let direction = key_as_string.and_then(|key| context.keymap.get(&key).cloned());
+    println!("Direction: {:?} pressed", direction);
+
+    match direction {
+        Some(Direction::LEFT) => {
+            let x_position = context.entity.transform.position.x;
+            context.entity.transform.position.x = x_position - 0.1;
+        }
+        Some(Direction::RIGHT) => {
+            let x_position = context.entity.transform.position.x;
+            context.entity.transform.position.x = x_position + 0.1;
+        }
+        Some(Direction::UP) => {
+            let y_position = context.entity.transform.position.y;
+            context.entity.transform.position.y = y_position + 0.1;
+        }
+        Some(Direction::DOWN) => {
+            let y_position = context.entity.transform.position.y;
+            context.entity.transform.position.y = y_position - 0.1;
+        }
+        _ => {}
+    }
 }
 
 pub fn handle_keyboard_events(context: &mut WindowManagerContext, key: Key, action: Action) {
     handle_window_control_keyboard_events(context, key, action);
     match action {
         Action::Press => {
-            println!("Direction: {:?} pressed", handle_engine_keyboard_press_events(context, key))
+            handle_engine_keyboard_press_events(context, key);
         },
         _ => {}
     }

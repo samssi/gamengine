@@ -1,8 +1,9 @@
 use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
-use crate::entity::entity::Entity3d;
+use crate::entity::entity::{Entity3d, TRIANGLE};
 use crate::graphics::calculations::apply_3d_transformations;
+use crate::state::context::WindowManagerContext;
 
 // TODO: make globally configurable
 const HEIGHT: i32 = 800;
@@ -202,15 +203,8 @@ fn print_fps(delta_time: u128) {
     }
 }
 
-const TRIANGLE: [f32; 9] =
-    [  -0.4, -0.2, 0.0,
-        0.4, -0.2, 0.0,
-        0.0, 0.2, 0.0
-    ];
 
-
-pub fn gl_render(_delta_time: u128) {
+pub fn gl_render(context: &mut WindowManagerContext, _delta_time: u128) {
     //print_fps(delta_time);
-    let entity_3d = Entity3d::new(TRIANGLE.to_vec());
-    draw_entity(&entity_3d);
+    draw_entity(context.entity);
 }

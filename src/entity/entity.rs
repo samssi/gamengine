@@ -4,6 +4,12 @@ pub struct Vector3d {
     pub z: f32
 }
 
+pub const TRIANGLE: [f32; 9] =
+    [  -0.4, -0.2, 0.0,
+        0.4, -0.2, 0.0,
+        0.0, 0.2, 0.0
+    ];
+
 pub struct Rotation {
 // Degress struct
 }

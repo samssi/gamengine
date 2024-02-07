@@ -9,14 +9,6 @@ use crate::state::context::WindowManagerContext;
 const HEIGHT: i32 = 800;
 const WIDTH: i32 = 600;
 
-const VERTEX_SHADER_SOURCE: &str = r#"
-    #version 330 core
-    layout (location = 0) in vec3 aPos;
-    void main() {
-        gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-    }
-"#;
-
 fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
     let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
     unsafe {
@@ -36,24 +28,6 @@ fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
         gl::GetUniformLocation(program, attribute_name_cstring.as_ptr())
     }
 }
-
-const VERTEX_SHADER_SOURCE_2: &str = r#"
-    #version 330 core
-    in vec4 a_position;
-    uniform mat4 u_matrix;
-
-    void main() {
-        gl_Position = u_matrix * a_position;
-    }
-"#;
-
-const FRAGMENT_SHADER_SOURCE: &str = r#"
-    #version 330 core
-    out vec4 FragColor;
-    void main() {
-        FragColor = vec4(1.0, 0.5, 0.2, 1.0);
-    }
-"#;
 
 pub fn gl_init() {
     unsafe {
@@ -169,19 +143,22 @@ fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
     vao
 }
 
-fn draw_entity(entity_3d: &Entity3d) {
+fn draw_entity(context: &mut WindowManagerContext) {
     unsafe {
-        let vertex_shader = compile_shader(VERTEX_SHADER_SOURCE_2, gl::VERTEX_SHADER);
-        let fragment_shader = compile_shader(FRAGMENT_SHADER_SOURCE, gl::FRAGMENT_SHADER);
+        let fragment_shader_source = context.shaders.get("basic.frag").expect("fragment shader not found");
+        let vertex_shader_source = context.shaders.get("basic.vert").expect("vertex shader not found");
+
+        let vertex_shader = compile_shader(vertex_shader_source, gl::VERTEX_SHADER);
+        let fragment_shader = compile_shader(fragment_shader_source, gl::FRAGMENT_SHADER);
         let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap()).unwrap();
 
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);
         gl::UseProgram(program);
 
-        let vao = create_vao(program, &entity_3d.points);
+        let vao = create_vao(program, &context.entity.points);
 
-        let final_matrix = apply_3d_transformations(&entity_3d);
+        let final_matrix = apply_3d_transformations(&context.entity);
         let matrix_data = final_matrix.as_slice();
 
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
@@ -189,7 +166,7 @@ fn draw_entity(entity_3d: &Entity3d) {
 
         gl::BindVertexArray(vao);
 
-        let points_len: GLsizei = entity_3d.points.len() as GLsizei;
+        let points_len: GLsizei = context.entity.points.len() as GLsizei;
         gl::DrawArrays(gl::TRIANGLES, 0, points_len);
 
     }
@@ -206,5 +183,5 @@ fn print_fps(delta_time: u128) {
 
 pub fn gl_render(context: &mut WindowManagerContext, _delta_time: u128) {
     //print_fps(delta_time);
-    draw_entity(context.entity);
+    draw_entity(context);
 }

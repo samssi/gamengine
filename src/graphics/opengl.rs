@@ -186,5 +186,6 @@ fn print_fps(delta_time: u128) {
 
 pub fn gl_render(context: &mut WindowManagerContext, program: GLuint, _delta_time: u128) {
     //print_fps(delta_time);
+    // TODO: create new OpenGLContext and use it with OpenGL stuff with this eg. Vulkan can be separated
     draw_entity(context, program);
 }

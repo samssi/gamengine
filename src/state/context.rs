@@ -7,6 +7,7 @@ use crate::io::keyboard::KeyActivity;
 pub struct WindowManagerContext<'context> {
     pub window: &'context mut PWindow,
     pub keymap: &'context HashMap<&'context str, KeyActivity>,
+    // TODO: these below shouldn't probably be in this context
     pub entity: &'context mut Entity3d,
     pub vertex_shaders: &'context HashMap<String, GLuint>,
     pub fragment_shaders: &'context HashMap<String, GLuint>,
@@ -25,8 +26,7 @@ impl <'context> WindowManagerContext<'context> {
             keymap,
             entity,
             vertex_shaders,
-            fragment_shaders,
-
+            fragment_shaders
         }
     }
 

@@ -2,7 +2,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use glfw::{Context, WindowEvent, GlfwReceiver};
 use crate::entity::entity::{Entity3d, TRIANGLE};
 
-use crate::graphics::opengl::{gl_render, gl_init, create_shader_programs};
+use crate::graphics::opengl::{gl_render, gl_init, create_shader_programs, link_program};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
 use crate::state::context::WindowManagerContext;
@@ -54,8 +54,12 @@ pub fn start_window_manager() {
         &mut test_entity,
         &vertex_shader_programs,
         &fragment_shader_programs
-
     );
+
+    let program = link_program(
+        *context.vertex_shaders.get("basic.vert").unwrap(),
+        *context.fragment_shaders.get("basic.frag").unwrap())
+        .expect("program linking failed");
 
     while !context.window.should_close() {
         let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
@@ -64,7 +68,7 @@ pub fn start_window_manager() {
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
         gl_init();
-        gl_render(&mut context, delta_time);
+        gl_render(&mut context, program, delta_time);
 
         context.window.swap_buffers();
         glfw.poll_events();

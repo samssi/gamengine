@@ -75,7 +75,7 @@ fn compile_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     }
 }
 
-fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuint, String> {
+pub fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuint, String> {
     let program;
     unsafe {
         program = gl::CreateProgram();
@@ -158,13 +158,8 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
     shader_program_map
 }
 
-fn draw_entity(context: &mut WindowManagerContext) {
+fn draw_entity(context: &mut WindowManagerContext, program: GLuint) {
     unsafe {
-        let program = link_program(
-            *context.vertex_shaders.get("basic.vert").unwrap(),
-            *context.fragment_shaders.get("basic.frag").unwrap())
-            .expect("program linking failed");
-
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);
         gl::UseProgram(program);
@@ -194,7 +189,7 @@ fn print_fps(delta_time: u128) {
 }
 
 
-pub fn gl_render(context: &mut WindowManagerContext, _delta_time: u128) {
+pub fn gl_render(context: &mut WindowManagerContext, program: GLuint, _delta_time: u128) {
     //print_fps(delta_time);
-    draw_entity(context);
+    draw_entity(context, program);
 }

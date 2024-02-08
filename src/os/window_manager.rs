@@ -5,10 +5,7 @@ use crate::entity::entity::{Entity3d, TRIANGLE};
 use crate::graphics::opengl::{gl_render, gl_init, create_shader_programs, link_program};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
-use crate::state::context::WindowManagerContext;
-
-const SCREEN_WIDTH: u32 = 1800;
-const SCREEN_HEIGHT: u32 = 1000;
+use crate::state::context::{WindowManagerContext, WindowProperties};
 
 fn process_events<'context>(context: &'context mut WindowManagerContext, receiver: &GlfwReceiver<(f64, WindowEvent)>) {
     for (_, event) in glfw::flush_messages(&receiver) {
@@ -23,6 +20,10 @@ fn process_events<'context>(context: &'context mut WindowManagerContext, receive
 
 pub fn start_window_manager() {
     println!("Starting window manager!");
+    let window_properties = WindowProperties{
+        width: 800,
+        height: 600
+    };
 
     use glfw::fail_on_errors;
     let mut glfw = glfw::init(fail_on_errors!()).unwrap();
@@ -31,7 +32,7 @@ pub fn start_window_manager() {
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
 
     let (mut window, events) =
-        glfw.create_window(SCREEN_WIDTH, SCREEN_HEIGHT, "GamEngine", glfw::WindowMode::Windowed)
+        glfw.create_window(window_properties.width, window_properties.height, "GamEngine", glfw::WindowMode::Windowed)
             .expect("Failed to create GLFW window");
 
     window.make_current();
@@ -50,6 +51,7 @@ pub fn start_window_manager() {
 
     let mut context = WindowManagerContext::new(
         &mut window,
+        &window_properties,
         &keymap,
         &mut test_entity,
         &vertex_shader_programs,
@@ -67,7 +69,7 @@ pub fn start_window_manager() {
 
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-        gl_init();
+        gl_init(&mut context);
         gl_render(&mut context, program, delta_time);
 
         context.window.swap_buffers();

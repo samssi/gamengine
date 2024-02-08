@@ -2,14 +2,9 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use std::collections::HashMap;
-use crate::entity::entity::{Entity3d, TRIANGLE};
 use crate::graphics::calculations::apply_3d_transformations;
-use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
 use crate::state::context::WindowManagerContext;
 
-// TODO: make globally configurable
-const HEIGHT: i32 = 800;
-const WIDTH: i32 = 600;
 
 fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
     let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
@@ -31,12 +26,12 @@ fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
     }
 }
 
-pub fn gl_init() {
+pub fn gl_init(context: &mut WindowManagerContext) {
     unsafe {
         gl::ClearColor(0.2, 0.3, 0.3, 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
-        gl::Viewport(0, 0, WIDTH, HEIGHT);
+        gl::Viewport(0, 0, context.window_properties.width as GLsizei, context.window_properties.height as GLsizei);
     }
 }
 

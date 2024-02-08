@@ -7,7 +7,7 @@ pub struct WindowManagerContext<'context> {
     pub window: &'context mut PWindow,
     pub keymap: &'context HashMap<&'context str, KeyActivity>,
     pub entity: &'context mut Entity3d,
-    pub shaders: &'context mut HashMap<&'context str, String>
+    pub shaders: &'context mut HashMap<String, String>
 }
 
 impl <'context> WindowManagerContext<'context> {
@@ -15,7 +15,7 @@ impl <'context> WindowManagerContext<'context> {
         window: &'context mut PWindow,
         keymap: &'context HashMap<&'context str, KeyActivity>,
         entity: &'context mut Entity3d,
-        shaders: &'context mut HashMap<&'context str, String>
+        shaders: &'context mut HashMap<String, String>
     ) -> Self {
         Self {
             window,

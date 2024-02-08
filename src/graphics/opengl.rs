@@ -1,8 +1,10 @@
 use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
+use std::collections::HashMap;
 use crate::entity::entity::{Entity3d, TRIANGLE};
 use crate::graphics::calculations::apply_3d_transformations;
+use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
 use crate::state::context::WindowManagerContext;
 
 // TODO: make globally configurable
@@ -114,8 +116,6 @@ fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
 
         gl::BindVertexArray(vao);
 
-        // println!("{}", vertices.len());
-
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
 
         gl::BufferData(
@@ -136,21 +136,37 @@ fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
 
 
 
-        // Unbind VBO and VAO (optional, uncomment if needed)
+        // Unbind VBO and VAO
         gl::BindBuffer(gl::ARRAY_BUFFER, 0);
         gl::BindVertexArray(0);
     }
     vao
 }
 
+fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLenum) -> HashMap<String, GLuint> {
+    let shader_program_map = shaders
+        .keys()
+        .fold(HashMap::new(), |mut acc: HashMap<String, GLuint>, key| {
+            let fragment_shader_source = shaders.get(key).expect("shader not found");
+            let fragment_shader_program = compile_shader(fragment_shader_source, shader_type)
+                .expect("shader load error");
+
+            acc.entry(key.clone()).or_insert(fragment_shader_program);
+            acc
+    });
+
+    shader_program_map
+}
+
 fn draw_entity(context: &mut WindowManagerContext) {
     unsafe {
-        let fragment_shader_source = context.shaders.get("basic.frag").expect("fragment shader not found");
-        let vertex_shader_source = context.shaders.get("basic.vert").expect("vertex shader not found");
+        let vertex_shader_programs = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
+        let fragment_shader_programs = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
 
-        let vertex_shader = compile_shader(vertex_shader_source, gl::VERTEX_SHADER);
-        let fragment_shader = compile_shader(fragment_shader_source, gl::FRAGMENT_SHADER);
-        let program = link_program(vertex_shader.unwrap(), fragment_shader.unwrap()).unwrap();
+        let program = link_program(
+            *vertex_shader_programs.get("basic.vert").unwrap(),
+            *fragment_shader_programs.get("basic.frag").unwrap())
+            .expect("program linking failed");
 
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);

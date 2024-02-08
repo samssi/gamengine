@@ -4,7 +4,7 @@ use crate::entity::entity::{Entity3d, TRIANGLE};
 
 use crate::graphics::opengl::{gl_render, gl_init};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
-use crate::io::loader::read_shaders_into_memory;
+use crate::io::loader::read_fragment_shaders_into_memory;
 use crate::state::context::WindowManagerContext;
 
 const SCREEN_WIDTH: u32 = 1800;
@@ -44,7 +44,8 @@ pub fn start_window_manager() {
     let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
     let keymap = create_keymap();
     let mut test_entity = Entity3d::new(TRIANGLE.to_vec());
-    let mut shaders = read_shaders_into_memory();
+    // TODO: useless temp
+    let mut shaders = read_fragment_shaders_into_memory();
 
     let mut context = WindowManagerContext::new(
         &mut window,

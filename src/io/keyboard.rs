@@ -43,6 +43,7 @@ fn key_to_string<'keytostr>(key: Key) -> Option<&'keytostr str> {
 }
 
 pub fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, KeyActivity> {
+    // TODO: use HashMap::from
     let mut map = HashMap::new();
     map.insert("w", KeyActivity::UP);
     map.insert("s", KeyActivity::DOWN);

@@ -143,7 +143,7 @@ fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
     vao
 }
 
-fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLenum) -> HashMap<String, GLuint> {
+pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLenum) -> HashMap<String, GLuint> {
     let shader_program_map = shaders
         .keys()
         .fold(HashMap::new(), |mut acc: HashMap<String, GLuint>, key| {
@@ -160,12 +160,9 @@ fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLenum)
 
 fn draw_entity(context: &mut WindowManagerContext) {
     unsafe {
-        let vertex_shader_programs = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
-        let fragment_shader_programs = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
-
         let program = link_program(
-            *vertex_shader_programs.get("basic.vert").unwrap(),
-            *fragment_shader_programs.get("basic.frag").unwrap())
+            *context.vertex_shaders.get("basic.vert").unwrap(),
+            *context.fragment_shaders.get("basic.frag").unwrap())
             .expect("program linking failed");
 
         gl::Enable(gl::CULL_FACE);

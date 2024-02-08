@@ -2,9 +2,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use glfw::{Context, WindowEvent, GlfwReceiver};
 use crate::entity::entity::{Entity3d, TRIANGLE};
 
-use crate::graphics::opengl::{gl_render, gl_init};
+use crate::graphics::opengl::{gl_render, gl_init, create_shader_programs};
 use crate::io::keyboard::{create_keymap, handle_keyboard_events};
-use crate::io::loader::read_fragment_shaders_into_memory;
+use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
 use crate::state::context::WindowManagerContext;
 
 const SCREEN_WIDTH: u32 = 1800;
@@ -44,14 +44,18 @@ pub fn start_window_manager() {
     let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
     let keymap = create_keymap();
     let mut test_entity = Entity3d::new(TRIANGLE.to_vec());
-    // TODO: useless temp
-    let mut shaders = read_fragment_shaders_into_memory();
+
+    let vertex_shader_programs = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
+    let fragment_shader_programs = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
 
     let mut context = WindowManagerContext::new(
         &mut window,
         &keymap,
         &mut test_entity,
-        &mut shaders);
+        &vertex_shader_programs,
+        &fragment_shader_programs
+
+    );
 
     while !context.window.should_close() {
         let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();

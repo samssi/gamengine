@@ -5,9 +5,9 @@ use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_i
 use crate::os::window_manager::{init_window_manager, start_opengl_window_manager};
 use crate::state::context::{EntityContext, GameContext, ShaderContext};
 
-fn game_render_event(entity_context: &mut EntityContext) {
-    let rotation = &entity_context.entities[0].transform.rotation;
-    entity_context.entities[0].transform.rotation.z = rotation.z + 0.01;
+fn game_render_event(game_context: &mut GameContext) {
+    let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
+    rotation.z = rotation.z + 0.01;
 }
 
 pub fn start() {

@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 use glfw::{Action, Key};
-use crate::entity::entity::Entity3d;
-use crate::state::context::{GameContext, WindowContext};
-use crate::state::context::EntityContext;
+use crate::state::context::{GameContext};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum KeyActivity {
     UP,
     DOWN,
@@ -71,7 +69,7 @@ fn handle_entity_keyboard_press_events(game_context: &mut GameContext, key: Key)
     let entity = &mut game_context.entity_context.entities[0];
     let key_as_string = key_to_string(key);
 
-    let direction = key_as_string.and_then(|key| game_context.window_context.keymap.get(&key).cloned());
+    let direction = key_as_string.and_then(|key| game_context.window_context.keymap.get(&key));
     println!("Direction: {:?} pressed", direction);
 
     match direction {

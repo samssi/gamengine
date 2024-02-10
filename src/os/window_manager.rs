@@ -53,7 +53,7 @@ pub fn init_window_manager(keymap: HashMap<String, KeyActivity>) -> (WindowConte
 pub fn start_opengl_window_manager(
     mut game_context: GameContext,
     events: GlfwReceiver<(f64, WindowEvent)>,
-    game_render_event: fn(entity_context: &mut EntityContext)) {
+    game_render_event: fn(game_context: &mut GameContext)) {
     println!("Starting window manager!");
 
     // TODO: handle error if time goes backwards
@@ -67,7 +67,7 @@ pub fn start_opengl_window_manager(
 
         init_renderer(&mut game_context.window_context);
         render(&game_context.entity_context, delta_time);
-        game_render_event(&mut game_context.entity_context);
+        game_render_event(&mut game_context);
 
         game_context.window_context.window.swap_buffers();
         game_context.window_context.glfw.poll_events();

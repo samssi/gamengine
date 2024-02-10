@@ -21,7 +21,7 @@ fn process_events (
     }
 }
 
-pub fn init_window_manager(keymap: HashMap<String, KeyActivity>) -> (WindowContext, GlfwReceiver<(f64, WindowEvent)>) {
+pub fn init_window_manager() -> (WindowContext, GlfwReceiver<(f64, WindowEvent)>) {
     let window_properties = WindowProperties{
         width: 800,
         height: 600
@@ -46,8 +46,7 @@ pub fn init_window_manager(keymap: HashMap<String, KeyActivity>) -> (WindowConte
     (WindowContext{
         window,
         window_properties,
-        glfw,
-        keymap
+        glfw
     }, events)
 }
 

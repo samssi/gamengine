@@ -12,8 +12,7 @@ pub struct WindowProperties {
 pub struct WindowContext {
     pub window: PWindow,
     pub window_properties: WindowProperties,
-    pub glfw: Glfw,
-    pub keymap: HashMap<String, KeyActivity>
+    pub glfw: Glfw
 }
 
 pub struct ShaderContext {
@@ -25,8 +24,13 @@ pub struct EntityContext {
     pub entities: Vec<Entity3d>,
 }
 
+pub struct KeyboardContext {
+    pub keymap: HashMap<String, KeyActivity>
+}
+
 pub struct GameContext {
     pub window_context: WindowContext,
     pub shader_context: ShaderContext,
-    pub entity_context: EntityContext
+    pub entity_context: EntityContext,
+    pub keyboard_context: KeyboardContext
 }

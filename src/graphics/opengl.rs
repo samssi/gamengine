@@ -2,8 +2,10 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use std::collections::HashMap;
+use crate::entity::entity::Entity3d;
 use crate::graphics::calculations::apply_3d_transformations;
-use crate::state::context::WindowManagerContext;
+use crate::state::context::WindowContext;
+use crate::state::entity_context::EntityContext;
 
 
 fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
@@ -26,7 +28,7 @@ fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
     }
 }
 
-pub fn gl_init(context: &mut WindowManagerContext) {
+pub fn gl_init(context: &mut WindowContext) {
     unsafe {
         gl::ClearColor(0.2, 0.3, 0.3, 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT);
@@ -70,18 +72,18 @@ fn compile_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     }
 }
 
-pub fn link_program(vertex_shader: GLuint, fragment_shader: GLuint) ->  Result<GLuint, String> {
+pub fn link_program(vertex_shader: &GLuint, fragment_shader: &GLuint) ->  Result<GLuint, String> {
     let program;
     unsafe {
         program = gl::CreateProgram();
 
-        gl::AttachShader(program, vertex_shader);
-        gl::AttachShader(program, fragment_shader);
+        gl::AttachShader(program, *vertex_shader);
+        gl::AttachShader(program, *fragment_shader);
 
         gl::LinkProgram(program);
 
-        gl::DeleteShader(vertex_shader);
-        gl::DeleteShader(fragment_shader);
+        gl::DeleteShader(*vertex_shader);
+        gl::DeleteShader(*fragment_shader);
 
         let mut success = gl::FALSE as GLint;
         gl::GetProgramiv(program, gl::LINK_STATUS, &mut success);
@@ -153,23 +155,23 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
     shader_program_map
 }
 
-fn draw_entity(context: &mut WindowManagerContext, program: GLuint) {
+fn draw_entity(entity_3d: &Entity3d) {
     unsafe {
         gl::Enable(gl::CULL_FACE);
         // gl::Enable(gl::DEPTH_TEST);
-        gl::UseProgram(program);
+        gl::UseProgram(entity_3d.program);
 
-        let vao = create_vao(program, &context.entity.points);
+        let vao = create_vao(entity_3d.program, &entity_3d.points);
 
-        let final_matrix = apply_3d_transformations(&context.entity);
+        let final_matrix = apply_3d_transformations(&entity_3d);
         let matrix_data = final_matrix.as_slice();
 
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
-        gl::UniformMatrix4fv(get_uniform_location(program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
+        gl::UniformMatrix4fv(get_uniform_location(entity_3d.program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
 
         gl::BindVertexArray(vao);
 
-        let points_len: GLsizei = context.entity.points.len() as GLsizei;
+        let points_len: GLsizei = entity_3d.points.len() as GLsizei;
         gl::DrawArrays(gl::TRIANGLES, 0, points_len);
 
     }
@@ -184,8 +186,8 @@ fn print_fps(delta_time: u128) {
 }
 
 
-pub fn gl_render(context: &mut WindowManagerContext, program: GLuint, _delta_time: u128) {
+pub fn gl_render(context: &EntityContext, _delta_time: u128) {
     //print_fps(delta_time);
     // TODO: create new OpenGLContext and use it with OpenGL stuff with this eg. Vulkan can be separated
-    draw_entity(context, program);
+    draw_entity(&context.entities[0]);
 }

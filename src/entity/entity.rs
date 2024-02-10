@@ -1,3 +1,7 @@
+use gl::types::GLuint;
+use crate::graphics::opengl::{link_program};
+use crate::state::entity_context::{EntityContext, ShaderContext};
+
 pub struct Vector3d {
     pub x: f32,
     pub y: f32,
@@ -16,13 +20,19 @@ pub struct Transform {
     pub scale: Vector3d
 }
 
+pub struct Shading {
+    pub vertex_shader: String,
+    pub fragment_shader: String
+}
+
 pub struct Entity3d {
     pub points: Vec<f32>,
+    pub program: GLuint,
     pub transform: Transform
 }
 
 impl Entity3d {
-    pub fn new(points: Vec<f32>) -> Self {
+    pub fn with_default_transform(context: ShaderContext, points: Vec<f32>, shading: Shading) -> Self {
         Self {
             points,
             transform: Transform {
@@ -41,7 +51,11 @@ impl Entity3d {
                     y: 0.0,
                     z: 0.0
                 }
-            }
+            },
+            program: link_program(
+                context.vertex_shaders.get("basic.vert").unwrap(),
+                context.fragment_shaders.get("basic.frag").unwrap())
+                .expect("program linking failed")
         }
     }
 }

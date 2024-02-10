@@ -5,6 +5,10 @@ use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_i
 use crate::os::window_manager::{init_window_manager, start_window_manager};
 use crate::state::entity_context::{EntityContext, ShaderContext};
 
+fn game_render_event(entity_context: &mut EntityContext) {
+
+}
+
 pub fn start() {
     let keymap = create_keymap();
     let basic_shading = Shading{
@@ -16,7 +20,6 @@ pub fn start() {
     let fragment_shaders = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
     let shader_context = ShaderContext{fragment_shaders, vertex_shaders};
 
-
     let mut entities: Vec<Entity3d> = vec![Entity3d::with_default_transform(
         shader_context,
         TRIANGLE.to_vec(),
@@ -27,5 +30,5 @@ pub fn start() {
         entities
     };
 
-    start_window_manager(&mut window_context, &mut entity_context, events)
+    start_window_manager(window_context, entity_context, events, game_render_event)
 }

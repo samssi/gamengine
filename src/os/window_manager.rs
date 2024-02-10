@@ -7,8 +7,8 @@ use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
 use crate::state::context::{WindowContext, WindowProperties};
 use crate::state::entity_context::{EntityContext};
 
-fn process_events<'context>(
-    window_context: &'context mut WindowContext,
+fn process_events (
+    window_context: &mut WindowContext,
     entity_context: &mut EntityContext,
     events: &GlfwReceiver<(f64, WindowEvent)>
     ) {
@@ -52,7 +52,11 @@ pub fn init_window_manager(keymap: HashMap<String, KeyActivity>) -> (WindowConte
     }, events)
 }
 
-pub fn start_window_manager(context: &mut WindowContext, entity_context: &mut EntityContext, events: GlfwReceiver<(f64, WindowEvent)>) {
+pub fn start_window_manager(
+    mut context: WindowContext,
+    mut entity_context: EntityContext,
+    events: GlfwReceiver<(f64, WindowEvent)>,
+    game_render_event: fn(entity_context: &mut EntityContext)) {
     println!("Starting window manager!");
 
     // TODO: handle error if time goes backwards
@@ -64,12 +68,13 @@ pub fn start_window_manager(context: &mut WindowContext, entity_context: &mut En
 
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-        init_renderer(context);
+        init_renderer(&mut context);
         render(&entity_context, delta_time);
+        game_render_event(&mut entity_context);
 
         context.window.swap_buffers();
         context.glfw.poll_events();
 
-        process_events(context, entity_context, &events)
+        process_events(&mut context, &mut entity_context, &events)
     }
 }

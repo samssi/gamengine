@@ -1,3 +1,4 @@
+use std::fmt::format;
 use gl::types::GLuint;
 use crate::graphics::opengl::{link_program};
 use crate::state::entity_context::{EntityContext, ShaderContext};
@@ -53,9 +54,11 @@ impl Entity3d {
                 }
             },
             program: link_program(
-                context.vertex_shaders.get("basic.vert").unwrap(),
-                context.fragment_shaders.get("basic.frag").unwrap())
-                .expect("program linking failed")
+                context.vertex_shaders.get(&*shading.vertex_shader)
+                    .expect(&format!("failed to load vertex shader: {}", shading.vertex_shader)),
+                context.fragment_shaders.get(&*shading.fragment_shader)
+                    .expect(&format!("failed to load fragment shader: {}", shading.fragment_shader)))
+                .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}", shading.vertex_shader, shading.fragment_shader))
         }
     }
 }

@@ -7,7 +7,8 @@ use crate::state::entity_context::{EntityContext, ShaderContext};
 
 pub fn start() {
     let keymap = create_keymap();
-    let basic_shading = Shading{vertex_shader: String::from("basic.vert"),
+    let basic_shading = Shading{
+        vertex_shader: String::from("basic.vert"),
         fragment_shader: String::from("basic.frag")};
 
     let (mut window_context, events) = init_window_manager(keymap);

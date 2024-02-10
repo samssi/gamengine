@@ -28,15 +28,6 @@ fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
     }
 }
 
-pub fn gl_init(context: &mut WindowContext) {
-    unsafe {
-        gl::ClearColor(0.2, 0.3, 0.3, 1.0);
-        gl::Clear(gl::COLOR_BUFFER_BIT);
-
-        gl::Viewport(0, 0, context.window_properties.width as GLsizei, context.window_properties.height as GLsizei);
-    }
-}
-
 fn compile_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     let c_str_source = CString::new(source).expect("CString::new failed");
     let shader;
@@ -185,8 +176,17 @@ fn print_fps(delta_time: u128) {
     }
 }
 
+pub fn init_renderer(context: &mut WindowContext) {
+    unsafe {
+        gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+        gl::Clear(gl::COLOR_BUFFER_BIT);
 
-pub fn gl_render(context: &EntityContext, _delta_time: u128) {
+        gl::Viewport(0, 0, context.window_properties.width as GLsizei, context.window_properties.height as GLsizei);
+    }
+}
+
+
+pub fn render(context: &EntityContext, _delta_time: u128) {
     //print_fps(delta_time);
     // TODO: create new OpenGLContext and use it with OpenGL stuff with this eg. Vulkan can be separated
     draw_entity(&context.entities[0]);

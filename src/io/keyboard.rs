@@ -30,31 +30,31 @@ fn string_to_key(key_str: &str) -> Option<Key> {
     }
 }
 
-fn key_to_string<'keytostr>(key: Key) -> Option<&'keytostr str> {
+fn key_to_string(key: Key) -> Option<String> {
     match key {
-        Key::W => Some("w"),
-        Key::A => Some("a"),
-        Key::S => Some("s"),
-        Key::D => Some("d"),
-        Key::Q => Some("q"),
-        Key::E => Some("e"),
-        Key::KpAdd => Some("keypad-add"),
-        Key::KpSubtract=> Some("keypad-subtract"),
+        Key::W => Some(String::from("w")),
+        Key::A => Some(String::from("a")),
+        Key::S => Some(String::from("s")),
+        Key::D => Some(String::from("d")),
+        Key::Q => Some(String::from("q")),
+        Key::E => Some(String::from("e")),
+        Key::KpAdd => Some(String::from("keypad-add")),
+        Key::KpSubtract=> Some(String::from("keypad-subtract")),
         _ => None
     }
 }
 
-pub fn create_keymap<'dirmap>() -> HashMap<&'dirmap str, KeyActivity> {
+pub fn create_keymap() -> HashMap<String, KeyActivity> {
     // TODO: use HashMap::from
     let mut map = HashMap::new();
-    map.insert("w", KeyActivity::UP);
-    map.insert("s", KeyActivity::DOWN);
-    map.insert("a", KeyActivity::LEFT);
-    map.insert("d", KeyActivity::RIGHT);
-    map.insert("e", KeyActivity::ROTATE_CLOCKWISE);
-    map.insert("q", KeyActivity::ROTATE_COUNTER_CLOCKWISE);
-    map.insert("keypad-add", KeyActivity::SCALE_ALL_UP);
-    map.insert("keypad-subtract", KeyActivity::SCALE_ALL_DOWN);
+    map.insert(String::from("w"), KeyActivity::UP);
+    map.insert(String::from("s"), KeyActivity::DOWN);
+    map.insert(String::from("a"), KeyActivity::LEFT);
+    map.insert(String::from("d"), KeyActivity::RIGHT);
+    map.insert(String::from("e"), KeyActivity::ROTATE_CLOCKWISE);
+    map.insert(String::from("q"), KeyActivity::ROTATE_COUNTER_CLOCKWISE);
+    map.insert(String::from("keypad-add"), KeyActivity::SCALE_ALL_UP);
+    map.insert(String::from("keypad-subtract"), KeyActivity::SCALE_ALL_DOWN);
     map
 }
 

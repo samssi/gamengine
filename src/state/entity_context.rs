@@ -7,6 +7,6 @@ pub struct ShaderContext {
     pub fragment_shaders: HashMap<String, GLuint>
 }
 
-pub struct EntityContext<'context> {
-    pub entities: &'context mut Vec<Entity3d>,
+pub struct EntityContext {
+    pub entities: Vec<Entity3d>,
 }

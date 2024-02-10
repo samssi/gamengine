@@ -11,7 +11,8 @@ pub enum KeyActivity {
     ROTATE_CLOCKWISE,
     ROTATE_COUNTER_CLOCKWISE,
     SCALE_ALL_UP,
-    SCALE_ALL_DOWN
+    SCALE_ALL_DOWN,
+    MODE
 }
 
 fn string_to_key(key_str: &str) -> Option<Key> {
@@ -22,6 +23,7 @@ fn string_to_key(key_str: &str) -> Option<Key> {
         "d" => Some(Key::D),
         "q" => Some(Key::Q),
         "e" => Some(Key::E),
+        "space" => Some(Key::Space),
         "keypad-add" => Some(Key::KpAdd),
         "keypad-subtract" => Some(Key::KpSubtract),
         _ => None
@@ -36,6 +38,7 @@ pub fn key_to_string(key: Key) -> Option<String> {
         Key::D => Some(String::from("d")),
         Key::Q => Some(String::from("q")),
         Key::E => Some(String::from("e")),
+        Key::Space => Some(String::from("space")),
         Key::KpAdd => Some(String::from("keypad-add")),
         Key::KpSubtract=> Some(String::from("keypad-subtract")),
         _ => None
@@ -53,10 +56,11 @@ pub fn create_keymap() -> HashMap<String, KeyActivity> {
     map.insert(String::from("q"), KeyActivity::ROTATE_COUNTER_CLOCKWISE);
     map.insert(String::from("keypad-add"), KeyActivity::SCALE_ALL_UP);
     map.insert(String::from("keypad-subtract"), KeyActivity::SCALE_ALL_DOWN);
+    map.insert(String::from("space"), KeyActivity::MODE);
     map
 }
 
-fn handle_window_control_keyboard_events(context: &mut GameContext, key: Key, action: Action) {
+fn handle_window_control_keyboard_events<T>(context: &mut GameContext<T>, key: Key, action: Action) {
     match (key, action) {
         (Key::Escape, Action::Press) => {
             _ = &mut context.window_context.window.set_should_close(true);
@@ -65,10 +69,10 @@ fn handle_window_control_keyboard_events(context: &mut GameContext, key: Key, ac
     }
 }
 
-pub fn handle_keyboard_events(game_context: &mut GameContext,
+pub fn handle_keyboard_events<T>(game_context: &mut GameContext<T>,
                               key: Key,
                               action: Action,
-                              glfw_press_handler: fn(game_context: &mut GameContext, key: Key)) {
+                              glfw_press_handler: fn(game_context: &mut GameContext<T>, key: Key)) {
     handle_window_control_keyboard_events(game_context, key, action);
     match action {
         Action::Press => {

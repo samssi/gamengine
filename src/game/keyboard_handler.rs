@@ -1,15 +1,19 @@
 use glfw::Key;
+use crate::game::context::GameState;
 use crate::io::keyboard::{key_to_string, KeyActivity};
-use crate::state::context::GameContext;
+use crate::state::context::{Game, GameContext};
 
-pub fn glfw_press_handler(game_context: &mut GameContext, key: Key) {
+pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
     let entity = &mut game_context.entity_context.entities[0];
     let key_as_string = key_to_string(key);
 
-    let direction = key_as_string.and_then(|key| game_context.keyboard_context.keymap.get(&key));
-    println!("Direction: {:?} pressed", direction);
+    let key_activity = key_as_string.and_then(|key| game_context.keyboard_context.keymap.get(&key));
+    println!("Direction: {:?} pressed", key_activity);
 
-    match direction {
+    match key_activity {
+        Some(KeyActivity::MODE) => {
+            game_context.game.state.edit_mode = true
+        }
         Some(KeyActivity::LEFT) => {
             let x_position = entity.transform.position.x;
             entity.transform.position.x = x_position - 0.1;
@@ -53,5 +57,5 @@ pub fn glfw_press_handler(game_context: &mut GameContext, key: Key) {
             entity.transform.scale.z = scale_z - 0.1;
         }
         _ => {}
-    }
+    };
 }

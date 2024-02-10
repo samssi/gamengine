@@ -5,12 +5,12 @@ use glfw::{Context, GlfwReceiver, Key, PWindow, WindowEvent};
 use crate::graphics::opengl::{create_shader_programs, init_renderer, render};
 use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
-use crate::state::context::{EntityContext, GameContext, ShaderContext, WindowContext, WindowProperties};
+use crate::state::context::{EntityContext, Game, GameContext, ShaderContext, WindowContext, WindowProperties};
 
-fn process_events (
-    game_context: &mut GameContext,
+fn process_events<T> (
+    game_context: &mut GameContext<T>,
     events: &GlfwReceiver<(f64, WindowEvent)>,
-    glfw_press_handler: fn(game_context: &mut GameContext, key: Key)
+    glfw_press_handler: fn(game_context: &mut GameContext<T>, key: Key)
     ) {
     for (_, event) in glfw::flush_messages(&events) {
         match event {
@@ -56,11 +56,11 @@ pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, Window
      shader_context)
 }
 
-pub fn start_opengl_window_manager(
-    mut game_context: GameContext,
+pub fn start_opengl_window_manager<T>(
+    mut game_context: GameContext<T>,
     events: GlfwReceiver<(f64, WindowEvent)>,
-    game_render_event: fn(game_context: &mut GameContext),
-    glfw_press_handler: fn(game_context: &mut GameContext, key: Key)) {
+    game_render_event: fn(game_context: &mut GameContext<T>),
+    glfw_press_handler: fn(game_context: &mut GameContext<T>, key: Key)) {
     println!("Starting window manager!");
 
     // TODO: handle error if time goes backwards

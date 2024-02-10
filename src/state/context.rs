@@ -28,9 +28,14 @@ pub struct KeyboardContext {
     pub keymap: HashMap<String, KeyActivity>
 }
 
-pub struct GameContext {
+pub struct Game<T> {
+    pub state: T
+}
+
+pub struct GameContext<T> {
     pub window_context: WindowContext,
     pub shader_context: ShaderContext,
     pub entity_context: EntityContext,
-    pub keyboard_context: KeyboardContext
+    pub keyboard_context: KeyboardContext,
+    pub game: Game<T>
 }

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::entity::entity::Entity3d;
 use crate::graphics::calculations::apply_3d_transformations;
 use crate::state::context::WindowContext;
-use crate::state::entity_context::EntityContext;
+use crate::state::context::EntityContext;
 
 
 fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
@@ -176,12 +176,12 @@ fn print_fps(delta_time: u128) {
     }
 }
 
-pub fn init_renderer(context: &mut WindowContext) {
+pub fn init_renderer(window_context: &mut WindowContext) {
     unsafe {
         gl::ClearColor(0.2, 0.3, 0.3, 1.0);
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
-        gl::Viewport(0, 0, context.window_properties.width as GLsizei, context.window_properties.height as GLsizei);
+        gl::Viewport(0, 0, window_context.window_properties.width as GLsizei, window_context.window_properties.height as GLsizei);
     }
 }
 

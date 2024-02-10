@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use glfw::{Action, Key};
 use crate::entity::entity::Entity3d;
-use crate::state::context::WindowContext;
-use crate::state::entity_context::EntityContext;
+use crate::state::context::{GameContext, WindowContext};
+use crate::state::context::EntityContext;
 
 #[derive(Debug, Clone)]
 pub enum KeyActivity {
@@ -58,19 +58,20 @@ pub fn create_keymap() -> HashMap<String, KeyActivity> {
     map
 }
 
-fn handle_window_control_keyboard_events(context: &mut WindowContext, key: Key, action: Action) {
+fn handle_window_control_keyboard_events(context: &mut GameContext, key: Key, action: Action) {
     match (key, action) {
         (Key::Escape, Action::Press) => {
-            _ = &context.window.set_should_close(true);
+            _ = &mut context.window_context.window.set_should_close(true);
         },
         _ => {}
     }
 }
 
-fn handle_entity_keyboard_press_events(window_context: &mut WindowContext, entity: &mut Entity3d, key: Key) {
+fn handle_entity_keyboard_press_events(game_context: &mut GameContext, key: Key) {
+    let entity = &mut game_context.entity_context.entities[0];
     let key_as_string = key_to_string(key);
 
-    let direction = key_as_string.and_then(|key| window_context.keymap.get(&key).cloned());
+    let direction = key_as_string.and_then(|key| game_context.window_context.keymap.get(&key).cloned());
     println!("Direction: {:?} pressed", direction);
 
     match direction {
@@ -120,11 +121,13 @@ fn handle_entity_keyboard_press_events(window_context: &mut WindowContext, entit
     }
 }
 
-pub fn handle_keyboard_events(window_context: &mut WindowContext, entity: &mut Entity3d, key: Key, action: Action) {
-    handle_window_control_keyboard_events(window_context, key, action);
+pub fn handle_keyboard_events(game_context: &mut GameContext,
+                              key: Key,
+                              action: Action) {
+    handle_window_control_keyboard_events(game_context, key, action);
     match action {
         Action::Press => {
-            handle_entity_keyboard_press_events(window_context, entity, key);
+            handle_entity_keyboard_press_events(game_context, key);
         },
         _ => {}
     }

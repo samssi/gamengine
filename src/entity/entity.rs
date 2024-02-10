@@ -1,7 +1,6 @@
-use std::fmt::format;
 use gl::types::GLuint;
-use crate::graphics::opengl::{link_program};
-use crate::state::entity_context::{EntityContext, ShaderContext};
+use crate::graphics::opengl::link_program;
+use crate::state::context::ShaderContext;
 
 pub struct Vector3d {
     pub x: f32,
@@ -33,7 +32,7 @@ pub struct Entity3d {
 }
 
 impl Entity3d {
-    pub fn with_default_transform(context: ShaderContext, points: Vec<f32>, shading: Shading) -> Self {
+    pub fn with_default_transform(context: &ShaderContext, points: Vec<f32>, shading: Shading) -> Self {
         Self {
             points,
             transform: Transform {

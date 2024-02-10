@@ -1,21 +1,19 @@
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
-use glfw::{Context, WindowEvent, GlfwReceiver, PWindow};
+use glfw::{Context, GlfwReceiver, PWindow, WindowEvent};
 
-use crate::graphics::opengl::{render, init_renderer};
+use crate::graphics::opengl::{init_renderer, render};
 use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
-use crate::state::context::{WindowContext, WindowProperties};
-use crate::state::entity_context::{EntityContext};
+use crate::state::context::{EntityContext, GameContext, WindowContext, WindowProperties};
 
 fn process_events (
-    window_context: &mut WindowContext,
-    entity_context: &mut EntityContext,
+    game_context: &mut GameContext,
     events: &GlfwReceiver<(f64, WindowEvent)>
     ) {
     for (_, event) in glfw::flush_messages(&events) {
         match event {
             WindowEvent::Key(key, _, action, _) => {
-                handle_keyboard_events(window_context, &mut entity_context.entities[0], key, action)
+                handle_keyboard_events(game_context, key, action)
             },
         _ => {},
         }
@@ -52,9 +50,8 @@ pub fn init_window_manager(keymap: HashMap<String, KeyActivity>) -> (WindowConte
     }, events)
 }
 
-pub fn start_window_manager(
-    mut context: WindowContext,
-    mut entity_context: EntityContext,
+pub fn start_opengl_window_manager(
+    mut game_context: GameContext,
     events: GlfwReceiver<(f64, WindowEvent)>,
     game_render_event: fn(entity_context: &mut EntityContext)) {
     println!("Starting window manager!");
@@ -62,19 +59,19 @@ pub fn start_window_manager(
     // TODO: handle error if time goes backwards
     let mut previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-    while !context.window.should_close() {
+    while !game_context.window_context.window.should_close() {
         let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
         let delta_time = current_time - previous_time;
 
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
-        init_renderer(&mut context);
-        render(&entity_context, delta_time);
-        game_render_event(&mut entity_context);
+        init_renderer(&mut game_context.window_context);
+        render(&game_context.entity_context, delta_time);
+        game_render_event(&mut game_context.entity_context);
 
-        context.window.swap_buffers();
-        context.glfw.poll_events();
+        game_context.window_context.window.swap_buffers();
+        game_context.window_context.glfw.poll_events();
 
-        process_events(&mut context, &mut entity_context, &events)
+        process_events(&mut game_context, &events)
     }
 }

@@ -21,7 +21,7 @@ fn list_directory_files(dirname: &str) -> Vec<DirEntry> {
     }).collect()
 }
 
-fn into_shader_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
+fn into_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
     let mut shaders: HashMap<String, String> =
         dir_entry
             .iter()
@@ -30,9 +30,9 @@ fn into_shader_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
                 let shader_path = entry.path();
                 let shader_source = read_file_to_string(shader_path
                     .to_str()
-                    .expect("shader path not found"));
+                    .expect("file not found"));
 
-                acc.entry(file_name.into_string().expect("shader filename not found"))
+                acc.entry(file_name.into_string().expect("filename not found"))
                     .or_insert(shader_source.to_owned());
 
                 acc
@@ -41,12 +41,17 @@ fn into_shader_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
     return shaders;
 }
 
+pub fn load_object_files_into_memory() -> HashMap<String, String> {
+    let object_files = list_directory_files("assets/objects");
+    into_map(object_files)
+}
+
 pub fn read_fragment_shaders_into_memory() -> HashMap<String, String> {
     let fragment_shader_files = list_directory_files("assets/shaders/fragment");
-    into_shader_map(fragment_shader_files)
+    into_map(fragment_shader_files)
 }
 
 pub fn read_vertex_shaders_into_memory() -> HashMap<String, String> {
     let vertex_shader_files = list_directory_files("assets/shaders/vertex");
-    into_shader_map(vertex_shader_files)
+    into_map(vertex_shader_files)
 }

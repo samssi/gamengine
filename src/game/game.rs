@@ -3,8 +3,9 @@ use crate::entity::entity::{Entity3d, f_letter_entity, Shading, TRIANGLE, Vector
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::io::keyboard::{create_keymap};
+use crate::io::loader::load_object_files_into_memory;
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
-use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ShaderContext};
+use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ObjectContext, ShaderContext};
 
 fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
     let basic_shading = Shading{
@@ -60,9 +61,14 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
         state: game_state
     };
 
+    let object_context = ObjectContext{
+        objects: load_object_files_into_memory()
+    };
+
     (GameContext {
         shader_context,
         window_context,
+        object_context,
         entity_context,
         keyboard_context,
         game,

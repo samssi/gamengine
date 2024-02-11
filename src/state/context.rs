@@ -20,6 +20,10 @@ pub struct ShaderContext {
     pub fragment_shaders: HashMap<String, GLuint>
 }
 
+pub struct ObjectContext {
+    pub objects: HashMap<String, String>
+}
+
 pub struct EntityContext {
     pub entities: Vec<Entity3d>,
 }
@@ -35,6 +39,7 @@ pub struct Game<T> {
 pub struct GameContext<T> {
     pub window_context: WindowContext,
     pub shader_context: ShaderContext,
+    pub object_context: ObjectContext,
     pub entity_context: EntityContext,
     pub keyboard_context: KeyboardContext,
     pub game: Game<T>

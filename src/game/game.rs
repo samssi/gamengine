@@ -1,5 +1,5 @@
 use glfw::{GlfwReceiver, Key, WindowEvent};
-use crate::entity::entity::{CUBE, Entity3d, Shading, TRIANGLE, Vector3d};
+use crate::entity::entity::{Entity3d, f_letter_entity, Shading, TRIANGLE, Vector3d};
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::io::keyboard::{create_keymap};
@@ -11,22 +11,29 @@ fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
         vertex_shader: String::from("basic.vert"),
         fragment_shader: String::from("basic.frag")};
 
-    let triangle = Entity3d::with_default_transform(
+    let triangle = Entity3d::with_position(
         &shader_context,
         TRIANGLE.to_vec(),
-        &basic_shading
+        &basic_shading,
+        Vector3d{
+            x: -200.0,
+            y: -200.0,
+            z: 0.0
+        }
     );
 
-    let cube = Entity3d::with_default_transform(
+    let f_letter = Entity3d::with_default_transform(
         &shader_context,
-        CUBE.to_vec(),
+        f_letter_entity(),
         &basic_shading
     );
 
-    vec![triangle]
+    vec![f_letter, triangle]
 }
 fn game_render_event(game_context: &mut GameContext<GameState>) {
     let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
+    rotation.x = rotation.x + 0.01;
+    rotation.y = rotation.y + 0.01;
     rotation.z = rotation.z + 0.01;
 }
 

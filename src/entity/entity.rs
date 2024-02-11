@@ -15,19 +15,138 @@ pub const TRIANGLE: [f32; 9] =
         -175.0,  100.0, 0.0
     ];
 
-pub const CUBE: [f32;24] =
-[
-    // Front face vertices
-    0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    // Back face vertices
-    0.0, 0.0, 1.0,
-    1.0, 0.0, 1.0,
-    1.0, 1.0, 1.0,
-    0.0, 1.0, 1.0,
-];
+pub fn f_letter_entity() -> Vec<f32> {
+    vec![
+        // left column front
+        0.0, 0.0, 0.0,
+        0.0, 150.0, 0.0,
+        30.0, 0.0, 0.0,
+        0.0, 150.0, 0.0,
+        30.0, 150.0, 0.0,
+        30.0, 0.0, 0.0,
+
+        // top rung front
+        30.0, 0.0, 0.0,
+        30.0, 30.0, 0.0,
+        100.0, 0.0, 0.0,
+        30.0, 30.0, 0.0,
+        100.0, 30.0, 0.0,
+        100.0, 0.0, 0.0,
+
+        // middle rung front
+        30.0, 60.0, 0.0,
+        30.0, 90.0, 0.0,
+        67.0, 60.0, 0.0,
+        30.0, 90.0, 0.0,
+        67.0, 90.0, 0.0,
+        67.0, 60.0, 0.0,
+
+        // left column back
+        0.0, 0.0, 30.0,
+        30.0, 0.0, 30.0,
+        0.0, 150.0, 30.0,
+        0.0, 150.0, 30.0,
+        30.0, 0.0, 30.0,
+        30.0, 150.0, 30.0,
+
+        // top rung back
+        30.0, 0.0, 30.0,
+        100.0, 0.0, 30.0,
+        30.0, 30.0, 30.0,
+        30.0, 30.0, 30.0,
+        100.0, 0.0, 30.0,
+        100.0, 30.0, 30.0,
+
+        // middle rung back
+        30.0, 60.0, 30.0,
+        67.0, 60.0, 30.0,
+        30.0, 90.0, 30.0,
+        30.0, 90.0, 30.0,
+        67.0, 60.0, 30.0,
+        67.0, 90.0, 30.0,
+
+        // top
+        0.0, 0.0, 0.0,
+        100.0, 0.0, 0.0,
+        100.0, 0.0, 30.0,
+        0.0, 0.0, 0.0,
+        100.0, 0.0, 30.0,
+        0.0, 0.0, 30.0,
+
+        // top rung right
+        100.0, 0.0, 0.0,
+        100.0, 30.0, 0.0,
+        100.0, 30.0, 30.0,
+        100.0, 0.0, 0.0,
+        100.0, 30.0, 30.0,
+        100.0, 0.0, 30.0,
+
+        // under top rung
+        30.0, 30.0, 0.0,
+        30.0, 30.0, 30.0,
+        100.0, 30.0, 30.0,
+        30.0, 30.0, 0.0,
+        100.0, 30.0, 30.0,
+        100.0, 30.0, 0.0,
+
+        // between top rung and middle
+        30.0, 30.0, 0.0,
+        30.0, 60.0, 30.0,
+        30.0, 30.0, 30.0,
+        30.0, 30.0, 0.0,
+        30.0, 60.0, 0.0,
+        30.0, 60.0, 30.0,
+
+        // top of middle rung
+        30.0, 60.0, 0.0,
+        67.0, 60.0, 30.0,
+        30.0, 60.0, 30.0,
+        30.0, 60.0, 0.0,
+        67.0, 60.0, 0.0,
+        67.0, 60.0, 30.0,
+
+        // right of middle rung
+        67.0, 60.0, 0.0,
+        67.0, 90.0, 30.0,
+        67.0, 60.0, 30.0,
+        67.0, 60.0, 0.0,
+        67.0, 90.0, 0.0,
+        67.0, 90.0, 30.0,
+
+        // bottom of middle rung.
+        30.0, 90.0, 0.0,
+        30.0, 90.0, 30.0,
+        67.0, 90.0, 30.0,
+        30.0, 90.0, 0.0,
+        67.0, 90.0, 30.0,
+        67.0, 90.0, 0.0,
+
+        // right of bottom
+        30.0, 90.0, 0.0,
+        30.0, 150.0, 30.0,
+        30.0, 90.0, 30.0,
+        30.0, 90.0, 0.0,
+        30.0, 150.0, 0.0,
+        30.0, 150.0, 30.0,
+
+        // bottom
+        0.0, 150.0, 0.0,
+        0.0, 150.0, 30.0,
+        30.0, 150.0, 30.0,
+        0.0, 150.0, 0.0,
+        30.0, 150.0, 30.0,
+        30.0, 150.0, 0.0,
+
+        // left side
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 30.0,
+        0.0, 150.0, 30.0,
+        0.0, 0.0, 0.0,
+        0.0, 150.0, 30.0,
+        0.0, 150.0, 0.0,
+    ]
+}
+
 
 pub struct Transform {
     pub position: Vector3d,
@@ -46,33 +165,52 @@ pub struct Entity3d {
     pub transform: Transform
 }
 
+fn zero_vector() -> Vector3d {
+    Vector3d {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+    }
+}
+
+fn one_vector() -> Vector3d {
+    Vector3d {
+        x: 1.0,
+        y: 1.0,
+        z: 1.0
+    }
+}
+
+fn create_program(context: &ShaderContext, shading: &Shading) -> GLuint {
+    link_program(
+        context.vertex_shaders.get(&*shading.vertex_shader)
+            .expect(&format!("failed to load vertex shader: {}", shading.vertex_shader)),
+        context.fragment_shaders.get(&*shading.fragment_shader)
+            .expect(&format!("failed to load fragment shader: {}", shading.fragment_shader)))
+        .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}", shading.vertex_shader, shading.fragment_shader))
+}
+
 impl Entity3d {
+    pub fn with_position(context: &ShaderContext, points: Vec<f32>, shading: &Shading, position: Vector3d) -> Self {
+        Self {
+            points,
+            transform: Transform {
+                position,
+                scale: one_vector(),
+                rotation: zero_vector()
+            },
+            program: create_program(context, shading)
+        }
+    }
     pub fn with_default_transform(context: &ShaderContext, points: Vec<f32>, shading: &Shading) -> Self {
         Self {
             points,
             transform: Transform {
-                position: Vector3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 0.0
-                },
-                scale: Vector3d {
-                    x: 1.0,
-                    y: 1.0,
-                    z: 1.0
-                },
-                rotation: Vector3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 0.0
-                }
+                position: zero_vector(),
+                scale: one_vector(),
+                rotation: zero_vector()
             },
-            program: link_program(
-                context.vertex_shaders.get(&*shading.vertex_shader)
-                    .expect(&format!("failed to load vertex shader: {}", shading.vertex_shader)),
-                context.fragment_shaders.get(&*shading.fragment_shader)
-                    .expect(&format!("failed to load fragment shader: {}", shading.fragment_shader)))
-                .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}", shading.vertex_shader, shading.fragment_shader))
+            program: create_program(context, shading)
         }
     }
 }

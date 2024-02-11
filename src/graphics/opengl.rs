@@ -168,6 +168,12 @@ fn draw_entity(entity_3d: &Entity3d) {
     }
 }
 
+fn draw_entities(context: &EntityContext) {
+    context.entities
+        .iter()
+        .for_each(|entity| draw_entity(entity));
+}
+
 
 #[allow(dead_code)]
 fn print_fps(delta_time: u128) {
@@ -188,6 +194,5 @@ pub fn init_renderer(window_context: &mut WindowContext) {
 
 pub fn render(context: &EntityContext, _delta_time: u128) {
     //print_fps(delta_time);
-    // TODO: create new OpenGLContext and use it with OpenGL stuff with this eg. Vulkan can be separated
-    draw_entity(&context.entities[0]);
+    draw_entities(context);
 }

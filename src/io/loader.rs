@@ -12,12 +12,7 @@ fn list_directory_files(dirname: &str) -> Vec<DirEntry> {
     files.filter_map(|file| {
         let dir_entry = file.unwrap();
         let file_type = dir_entry.file_type().ok()?;
-        if file_type.is_file() {
-            Some(dir_entry)
-        }
-        else {
-            None
-        }
+        if file_type.is_file() { Some(dir_entry) } else { None }
     }).collect()
 }
 
@@ -41,7 +36,7 @@ fn into_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
     return shaders;
 }
 
-pub fn load_object_files_into_memory() -> HashMap<String, String> {
+pub fn read_object_files_into_memory() -> HashMap<String, String> {
     let object_files = list_directory_files("assets/objects");
     into_map(object_files)
 }

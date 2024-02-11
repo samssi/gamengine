@@ -12,23 +12,23 @@ pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
 
     match key_activity {
         Some(KeyActivity::MODE) => {
-            game_context.game.state.edit_mode = true
+
         }
         Some(KeyActivity::LEFT) => {
             let x_position = entity.transform.position.x;
-            entity.transform.position.x = x_position - 0.1;
+            entity.transform.position.x = x_position - 10.0;
         }
         Some(KeyActivity::RIGHT) => {
             let x_position = entity.transform.position.x;
-            entity.transform.position.x = x_position + 0.1;
+            entity.transform.position.x = x_position + 10.0;
         }
         Some(KeyActivity::UP) => {
             let y_position = entity.transform.position.y;
-            entity.transform.position.y = y_position + 0.1;
+            entity.transform.position.y = y_position + 10.0;
         }
         Some(KeyActivity::DOWN) => {
             let y_position = entity.transform.position.y;
-            entity.transform.position.y = y_position - 0.1;
+            entity.transform.position.y = y_position - 10.0;
         }
         Some(KeyActivity::ROTATE_CLOCKWISE) => {
             let rotation = entity.transform.rotation.z;

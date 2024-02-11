@@ -9,10 +9,25 @@ pub struct Vector3d {
 }
 
 pub const TRIANGLE: [f32; 9] =
-    [  -0.4, -0.2, 0.0,
-        0.4, -0.2, 0.0,
-        0.0, 0.2, 0.0
+    [
+        0.0, -100.0, 0.0,
+        150.0,  125.0, 0.0,
+        -175.0,  100.0, 0.0
     ];
+
+pub const CUBE: [f32;24] =
+[
+    // Front face vertices
+    0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 1.0, 0.0,
+    0.0, 1.0, 0.0,
+    // Back face vertices
+    0.0, 0.0, 1.0,
+    1.0, 0.0, 1.0,
+    1.0, 1.0, 1.0,
+    0.0, 1.0, 1.0,
+];
 
 pub struct Transform {
     pub position: Vector3d,
@@ -32,7 +47,7 @@ pub struct Entity3d {
 }
 
 impl Entity3d {
-    pub fn with_default_transform(context: &ShaderContext, points: Vec<f32>, shading: Shading) -> Self {
+    pub fn with_default_transform(context: &ShaderContext, points: Vec<f32>, shading: &Shading) -> Self {
         Self {
             points,
             transform: Transform {

@@ -1,11 +1,30 @@
 use glfw::{GlfwReceiver, Key, WindowEvent};
-use crate::entity::entity::{Entity3d, Shading, TRIANGLE};
+use crate::entity::entity::{CUBE, Entity3d, Shading, TRIANGLE, Vector3d};
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::io::keyboard::{create_keymap};
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
 use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ShaderContext};
 
+fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
+    let basic_shading = Shading{
+        vertex_shader: String::from("basic.vert"),
+        fragment_shader: String::from("basic.frag")};
+
+    let triangle = Entity3d::with_default_transform(
+        &shader_context,
+        TRIANGLE.to_vec(),
+        &basic_shading
+    );
+
+    let cube = Entity3d::with_default_transform(
+        &shader_context,
+        CUBE.to_vec(),
+        &basic_shading
+    );
+
+    vec![triangle]
+}
 fn game_render_event(game_context: &mut GameContext<GameState>) {
     let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
     rotation.z = rotation.z + 0.01;
@@ -13,18 +32,11 @@ fn game_render_event(game_context: &mut GameContext<GameState>) {
 
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     let keymap = create_keymap();
-    let basic_shading = Shading{
-        vertex_shader: String::from("basic.vert"),
-        fragment_shader: String::from("basic.frag")};
 
     let (window_context, events, shader_context)
         = init_opengl_window_manager();
 
-    let mut entities: Vec<Entity3d> = vec![Entity3d::with_default_transform(
-        &shader_context,
-        TRIANGLE.to_vec(),
-        basic_shading
-    )];
+    let mut entities: Vec<Entity3d> = entities(&shader_context);
 
     let entity_context = EntityContext{
         entities
@@ -35,8 +47,6 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let game_state = GameState{
-        edit_mode: false,
-        foo: false
     };
 
     let game = Game{

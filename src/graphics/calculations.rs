@@ -4,7 +4,7 @@ use crate::entity::entity::Entity3d;
 pub fn apply_3d_transformations(entity_3d: &Entity3d) -> Matrix4<f32> {
     // Our camera looks toward the point (1.0, 0.0, 0.0).
     // It is located at (0.0, 0.0, 1.0).
-    let eye = Point3::new(0.0, 0.0, 1.0);
+    let eye = Point3::new(0.0, 0.0, 600.0);
     let target = Point3::new(0.0, 0.0, 0.0);
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 

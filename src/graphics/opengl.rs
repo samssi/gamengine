@@ -149,7 +149,7 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
 fn draw_entity(entity_3d: &Entity3d) {
     unsafe {
         gl::Enable(gl::CULL_FACE);
-        // gl::Enable(gl::DEPTH_TEST);
+        //gl::Enable(gl::DEPTH_TEST);
         gl::UseProgram(entity_3d.program);
 
         let vao = create_vao(entity_3d.program, &entity_3d.points);

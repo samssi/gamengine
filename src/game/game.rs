@@ -4,8 +4,24 @@ use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::io::keyboard::{create_keymap};
 use crate::io::loader::read_object_files_into_memory;
+use crate::io::object::{parse_points_from_object_file, wavefront_object_as_points};
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
 use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ObjectContext, ShaderContext};
+
+fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext) -> Vec<Entity3d> {
+    let basic_shading = Shading{
+        vertex_shader: String::from("basic.vert"),
+        fragment_shader: String::from("basic.frag")};
+
+    let file_content = object_context.objects.get("casette.obj").expect("file not found");
+    let points = wavefront_object_as_points(file_content);
+    let cube = Entity3d::with_default_transform(
+        &shader_context,
+        points,
+        &basic_shading
+    );
+    vec![cube]
+}
 
 fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
     let basic_shading = Shading{
@@ -44,11 +60,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     let (window_context, events, shader_context)
         = init_opengl_window_manager();
 
-    let mut entities: Vec<Entity3d> = entities(&shader_context);
-
-    let entity_context = EntityContext{
-        entities
-    };
+    //let mut entities: Vec<Entity3d> = entities(&shader_context);
 
     let keyboard_context = KeyboardContext{
         keymap
@@ -61,8 +73,15 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
         state: game_state
     };
 
-    let object_context = ObjectContext{
+    let object_context = ObjectContext {
         objects: read_object_files_into_memory()
+    };
+
+    //let mut entities: Vec<Entity3d> = entities(&shader_context);
+    let mut entities: Vec<Entity3d> = asset_entities(&shader_context, &object_context);
+
+    let entity_context = EntityContext{
+        entities
     };
 
     (GameContext {

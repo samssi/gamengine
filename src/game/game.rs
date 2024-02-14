@@ -1,51 +1,53 @@
+use std::collections::HashMap;
 use glfw::{GlfwReceiver, Key, WindowEvent};
-use crate::entity::entity::{Entity3d, f_letter_entity, Shading, TRIANGLE, Vector3d};
+use crate::entity::entity::{Entity3d, f_letter_entity, TRIANGLE, Vector3d};
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
+use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
-use crate::io::loader::read_object_files_into_memory;
-use crate::io::object::{parse_points_from_object_file, wavefront_object_as_points};
+use crate::io::loader::{read_fragment_shaders_into_memory, read_object_files_into_memory, read_vertex_shaders_into_memory};
+use crate::io::object::{wavefront_object_as_points};
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
 use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ObjectContext, ShaderContext};
 
-fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext) -> Vec<Entity3d> {
-    let basic_shading = Shading{
-        vertex_shader: String::from("basic.vert"),
-        fragment_shader: String::from("basic.frag")};
+fn create_shader_context(vertex_shader: &str, fragment_shader: &str) -> ShaderContext {
+    let vertex_shaders = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
+    let fragment_shaders = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
 
+    let vertex_shader = vertex_shaders.get(vertex_shader)
+        .expect(&format!("failed to load vertex shader: {}", vertex_shader));
+
+    let fragment_shader = fragment_shaders.get(fragment_shader)
+        .expect(&format!("failed to load fragment shader: {}", fragment_shader));
+
+    let program = create_program(&vertex_shader, &fragment_shader);
+
+    ShaderContext{
+        fragment_shaders,
+        vertex_shaders,
+        programs: HashMap::from([(String::from("basic"), program)])
+    }
+}
+
+fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext) -> Vec<Entity3d> {
     let file_content = object_context.objects.get("casette.obj").expect("file not found");
     let points = wavefront_object_as_points(file_content);
-    let cube = Entity3d::with_default_transform(
+    let cassette = Entity3d::with_default_transform(
         &shader_context,
+        "basic",
         points,
-        &basic_shading
     );
-    vec![cube]
+    vec![cassette]
 }
 
 fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
-    let basic_shading = Shading{
-        vertex_shader: String::from("basic.vert"),
-        fragment_shader: String::from("basic.frag")};
-
-    let triangle = Entity3d::with_position(
-        &shader_context,
-        TRIANGLE.to_vec(),
-        &basic_shading,
-        Vector3d{
-            x: -200.0,
-            y: -200.0,
-            z: 0.0
-        }
-    );
-
     let f_letter = Entity3d::with_default_transform(
         &shader_context,
+        "basic",
         f_letter_entity(),
-        &basic_shading
     );
 
-    vec![f_letter, triangle]
+    vec![f_letter]
 }
 fn game_render_event(game_context: &mut GameContext<GameState>) {
     let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
@@ -57,7 +59,7 @@ fn game_render_event(game_context: &mut GameContext<GameState>) {
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     let keymap = create_keymap();
 
-    let (window_context, events, shader_context)
+    let (window_context, events)
         = init_opengl_window_manager();
 
     //let mut entities: Vec<Entity3d> = entities(&shader_context);
@@ -76,6 +78,8 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     let object_context = ObjectContext {
         objects: read_object_files_into_memory()
     };
+
+    let shader_context = create_shader_context("basic.vert", "basic.frag");
 
     //let mut entities: Vec<Entity3d> = entities(&shader_context);
     let mut entities: Vec<Entity3d> = asset_entities(&shader_context, &object_context);

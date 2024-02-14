@@ -1,5 +1,5 @@
 use gl::types::GLuint;
-use crate::graphics::opengl::link_program;
+use crate::graphics::opengl::{create_program, create_vao, link_shaders};
 use crate::state::context::ShaderContext;
 
 pub struct Vector3d {
@@ -154,17 +154,6 @@ pub struct Transform {
     pub scale: Vector3d
 }
 
-pub struct Shading {
-    pub vertex_shader: String,
-    pub fragment_shader: String
-}
-
-pub struct Entity3d {
-    pub points: Vec<f32>,
-    pub program: GLuint,
-    pub transform: Transform
-}
-
 fn zero_vector() -> Vector3d {
     Vector3d {
         x: 0.0,
@@ -181,17 +170,26 @@ fn one_vector() -> Vector3d {
     }
 }
 
-fn create_program(context: &ShaderContext, shading: &Shading) -> GLuint {
-    link_program(
-        context.vertex_shaders.get(&*shading.vertex_shader)
-            .expect(&format!("failed to load vertex shader: {}", shading.vertex_shader)),
-        context.fragment_shaders.get(&*shading.fragment_shader)
-            .expect(&format!("failed to load fragment shader: {}", shading.fragment_shader)))
-        .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}", shading.vertex_shader, shading.fragment_shader))
+pub struct Entity3d {
+    pub points: Vec<f32>,
+    pub transform: Transform,
+    pub program: GLuint,
+    pub vao: GLuint
+}
+
+fn get_program_or_fail(context: &ShaderContext, program: &str) -> GLuint {
+    context.programs.get(program).unwrap().clone()
+}
+
+fn create_vao_from(context: &ShaderContext, program: &str, points: &Vec<f32>) -> GLuint {
+    let program = get_program_or_fail(context, program);
+    create_vao(&program, &points)
 }
 
 impl Entity3d {
-    pub fn with_position(context: &ShaderContext, points: Vec<f32>, shading: &Shading, position: Vector3d) -> Self {
+    pub fn with_position(context: &ShaderContext, points: Vec<f32>, program: &str, position: Vector3d) -> Self {
+        let vao = create_vao_from(context, program, &points);
+
         Self {
             points,
             transform: Transform {
@@ -199,10 +197,13 @@ impl Entity3d {
                 scale: one_vector(),
                 rotation: zero_vector()
             },
-            program: create_program(context, shading)
+            program: get_program_or_fail(context, program),
+            vao
         }
     }
-    pub fn with_default_transform(context: &ShaderContext, points: Vec<f32>, shading: &Shading) -> Self {
+    pub fn with_default_transform(context: &ShaderContext, program: &str, points: Vec<f32>) -> Self {
+        let vao = create_vao_from(context, program, &points);
+
         Self {
             points,
             transform: Transform {
@@ -210,7 +211,8 @@ impl Entity3d {
                 scale: one_vector(),
                 rotation: zero_vector()
             },
-            program: create_program(context, shading)
+            program: get_program_or_fail(context, program),
+            vao
         }
     }
 }

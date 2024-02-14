@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 use glfw::{Context, GlfwReceiver, Key, PWindow, WindowEvent};
 
-use crate::graphics::opengl::{create_shader_programs, init_renderer, render};
+use crate::graphics::opengl::{create_program, create_shader_programs, init_renderer, link_shaders, render};
 use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_vertex_shaders_into_memory};
 use crate::state::context::{EntityContext, Game, GameContext, ShaderContext, WindowContext, WindowProperties};
@@ -22,7 +22,7 @@ fn process_events<T> (
     }
 }
 
-pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, WindowEvent)>, ShaderContext) {
+pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, WindowEvent)>) {
     let window_properties = WindowProperties{
         width: 800,
         height: 600
@@ -44,16 +44,11 @@ pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, Window
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
-    let vertex_shaders = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
-    let fragment_shaders = create_shader_programs(read_fragment_shaders_into_memory(), gl::FRAGMENT_SHADER);
-    let shader_context = ShaderContext{fragment_shaders, vertex_shaders};
-
     (WindowContext{
         window,
         window_properties,
         glfw
-    }, events,
-     shader_context)
+    }, events)
 }
 
 pub fn start_opengl_window_manager<T>(

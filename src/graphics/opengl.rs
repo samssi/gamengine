@@ -2,16 +2,16 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use std::collections::HashMap;
-use crate::entity::entity::Entity3d;
+use crate::entity::entity::{Entity3d};
 use crate::graphics::calculations::apply_3d_transformations;
-use crate::state::context::WindowContext;
+use crate::state::context::{ShaderContext, WindowContext};
 use crate::state::context::EntityContext;
 
 
-fn get_attrib_location(program: GLuint, attribute_name: &str) -> GLuint {
+fn get_attrib_location(program: &GLuint, attribute_name: &str) -> GLuint {
     let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
     unsafe {
-        let location = gl::GetAttribLocation(program, attribute_name_cstring.as_ptr());
+        let location = gl::GetAttribLocation(*program, attribute_name_cstring.as_ptr());
         if location != -1 {
             location as GLuint
         }
@@ -28,7 +28,7 @@ fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
     }
 }
 
-fn compile_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
+fn create_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     let c_str_source = CString::new(source).expect("CString::new failed");
     let shader;
     unsafe {
@@ -63,7 +63,7 @@ fn compile_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     }
 }
 
-pub fn link_program(vertex_shader: &GLuint, fragment_shader: &GLuint) ->  Result<GLuint, String> {
+pub fn link_shaders(vertex_shader: &GLuint, fragment_shader: &GLuint) ->  Result<GLuint, String> {
     let program;
     unsafe {
         program = gl::CreateProgram();
@@ -94,11 +94,21 @@ pub fn link_program(vertex_shader: &GLuint, fragment_shader: &GLuint) ->  Result
     }
 }
 
-fn create_vao(program: GLuint, vertices: &Vec<f32>) -> GLuint {
+pub fn create_program(vertex_shader: &GLuint, fragment_shader: &GLuint) -> GLuint {
+    link_shaders(&vertex_shader, &fragment_shader)
+        .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}",
+                         vertex_shader, fragment_shader))
+}
+
+pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
     unsafe {
+        gl::Enable(gl::CULL_FACE);
+        //gl::Enable(gl::DEPTH_TEST);
+        gl::UseProgram(*program);
+
         gl::GenVertexArrays(1, &mut vao);
         gl::GenBuffers(1, &mut vbo);
 
@@ -136,7 +146,7 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
         .keys()
         .fold(HashMap::new(), |mut acc: HashMap<String, GLuint>, key| {
             let fragment_shader_source = shaders.get(key).expect("shader not found");
-            let fragment_shader_program = compile_shader(fragment_shader_source, shader_type)
+            let fragment_shader_program = create_shader(fragment_shader_source, shader_type)
                 .expect("shader load error");
 
             acc.entry(key.clone()).or_insert(fragment_shader_program);
@@ -148,23 +158,15 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
 
 fn draw_entity(entity_3d: &Entity3d) {
     unsafe {
-        gl::Enable(gl::CULL_FACE);
-        //gl::Enable(gl::DEPTH_TEST);
-        gl::UseProgram(entity_3d.program);
-
-        let vao = create_vao(entity_3d.program, &entity_3d.points);
-
         let final_matrix = apply_3d_transformations(&entity_3d);
         let matrix_data = final_matrix.as_slice();
-
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
-        gl::UniformMatrix4fv(get_uniform_location(entity_3d.program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
 
-        gl::BindVertexArray(vao);
+        gl::UniformMatrix4fv(get_uniform_location(entity_3d.program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
+        gl::BindVertexArray(entity_3d.vao);
 
         let points_len: GLsizei = entity_3d.points.len() as GLsizei;
         gl::DrawArrays(gl::TRIANGLES, 0, points_len);
-
     }
 }
 

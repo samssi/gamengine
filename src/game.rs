@@ -1,3 +1,4 @@
 pub mod game;
 pub mod keyboard_handler;
-mod context;
+pub mod context;
+pub mod window_handler;

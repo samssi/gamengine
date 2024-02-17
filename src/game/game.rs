@@ -5,6 +5,7 @@ use crate::entity::entity::{Entity3d};
 use crate::entity::structures::{Transform, Vector3d};
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
+use crate::game::window_handler::glfw_window_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_object_files_into_memory, read_vertex_shaders_into_memory};
@@ -106,6 +107,7 @@ pub fn start() {
         game_context,
         events,
         game_render_event,
-        glfw_press_handler
+        glfw_press_handler,
+        glfw_window_handler
     )
 }

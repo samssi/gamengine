@@ -46,18 +46,17 @@ pub fn key_to_string(key: Key) -> Option<String> {
 }
 
 pub fn create_keymap() -> HashMap<String, KeyActivity> {
-    // TODO: use HashMap::from
-    let mut map = HashMap::new();
-    map.insert(String::from("w"), KeyActivity::UP);
-    map.insert(String::from("s"), KeyActivity::DOWN);
-    map.insert(String::from("a"), KeyActivity::LEFT);
-    map.insert(String::from("d"), KeyActivity::RIGHT);
-    map.insert(String::from("e"), KeyActivity::ROTATE_CLOCKWISE);
-    map.insert(String::from("q"), KeyActivity::ROTATE_COUNTER_CLOCKWISE);
-    map.insert(String::from("keypad-add"), KeyActivity::SCALE_ALL_UP);
-    map.insert(String::from("keypad-subtract"), KeyActivity::SCALE_ALL_DOWN);
-    map.insert(String::from("space"), KeyActivity::MODE);
-    map
+    HashMap::from([
+        (String::from("w"), KeyActivity::UP),
+        (String::from("s"), KeyActivity::DOWN),
+        (String::from("a"), KeyActivity::LEFT),
+        (String::from("d"), KeyActivity::RIGHT),
+        (String::from("e"), KeyActivity::ROTATE_CLOCKWISE),
+        (String::from("q"), KeyActivity::ROTATE_COUNTER_CLOCKWISE),
+        (String::from("keypad-add"), KeyActivity::SCALE_ALL_UP),
+        (String::from("keypad-subtract"), KeyActivity::SCALE_ALL_DOWN),
+        (String::from("space"), KeyActivity::MODE),
+    ])
 }
 
 fn handle_window_control_keyboard_events<T>(context: &mut GameContext<T>, key: Key, action: Action) {

@@ -35,12 +35,7 @@ impl Entity3d {
 
         Self {
             points,
-            // TODO: use new new_zero_transform
-            transform: Transform {
-                position: Vector3d::zero_vector(),
-                scale: Vector3d::one_vector(),
-                rotation: Vector3d::zero_vector()
-            },
+            transform: Transform::new_zero_transform(),
             program: context.get_program_or_fail(program),
             vao
         }

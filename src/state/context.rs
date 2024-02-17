@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use glfw::{Glfw, PWindow};
 use gl::types::GLuint;
+use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
 use crate::io::keyboard::KeyActivity;
 
@@ -21,11 +22,18 @@ pub struct ShaderContext {
     pub programs: HashMap<String, GLuint>
 }
 
+impl ShaderContext {
+    pub fn get_program_or_fail(&self, program: &str) -> GLuint {
+        self.programs.get(program).unwrap().clone()
+    }
+}
+
 pub struct ObjectContext {
     pub objects: HashMap<String, String>
 }
 
 pub struct EntityContext {
+    pub camera: Vec<Camera>,
     pub entities: Vec<Entity3d>,
 }
 

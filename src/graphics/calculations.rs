@@ -1,11 +1,15 @@
 use nalgebra::{Isometry3, Matrix4, Perspective3, Point3, Rotation3, Unit, Vector3};
+use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
+use crate::entity::structures::Vector3d;
 
-pub fn apply_3d_transformations(entity_3d: &Entity3d) -> Matrix4<f32> {
-    // Our camera looks toward the point (1.0, 0.0, 0.0).
-    // It is located at (0.0, 0.0, 1.0).
-    let eye = Point3::new(0.0, 0.0, 600.0);
-    let target = Point3::new(0.0, 0.0, 0.0);
+fn to_point3(vector_3d: &Vector3d) -> Point3<f32> {
+    Point3::new(vector_3d.x, vector_3d.y, vector_3d.z)
+}
+
+pub fn apply_3d_transformations(entity_3d: &Entity3d, camera: &Camera) -> Matrix4<f32> {
+    let eye = to_point3(&camera.transform.position);
+    let target = to_point3(&camera.target);
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 
     let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);

@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use glfw::{GlfwReceiver, Key, WindowEvent};
-use crate::entity::entity::{Entity3d, f_letter_entity, TRIANGLE, Vector3d};
+use crate::entity::camera::Camera;
+use crate::entity::entity::{Entity3d};
+use crate::entity::structures::{Transform, Vector3d};
 use crate::game::context::GameState;
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
@@ -40,15 +42,6 @@ fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext
     vec![cassette]
 }
 
-fn entities(shader_context: &ShaderContext) -> Vec<Entity3d> {
-    let f_letter = Entity3d::with_default_transform(
-        &shader_context,
-        "basic",
-        f_letter_entity(),
-    );
-
-    vec![f_letter]
-}
 fn game_render_event(game_context: &mut GameContext<GameState>) {
     let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
     rotation.x = rotation.x + 0.01;
@@ -85,7 +78,15 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     let mut entities: Vec<Entity3d> = asset_entities(&shader_context, &object_context);
 
     let entity_context = EntityContext{
-        entities
+        entities,
+        camera: vec![Camera{
+            transform: Transform::new_zero_transform_with_position(Vector3d {
+                x: 0.0,
+                y: 0.0,
+                z: 600.0,
+            }),
+            target: Vector3d::zero_vector()
+        }]
     };
 
     (GameContext {

@@ -12,7 +12,8 @@ pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
 
     match key_activity {
         Some(KeyActivity::MODE) => {
-
+            let mut camera_mode = game_context.game.state.camera_mode;
+            if camera_mode { game_context.game.state.camera_mode = false } else { game_context.game.state.camera_mode = true }
         }
         Some(KeyActivity::LEFT) => {
             let x_position = entity.transform.position.x;

@@ -11,7 +11,7 @@ use crate::io::keyboard::{create_keymap};
 use crate::io::loader::{read_fragment_shaders_into_memory, read_object_files_into_memory, read_vertex_shaders_into_memory};
 use crate::io::object::{wavefront_object_as_points};
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
-use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, ObjectContext, ShaderContext};
+use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, MouseContext, ObjectContext, ShaderContext};
 
 fn create_shader_context(vertex_shader: &str, fragment_shader: &str) -> ShaderContext {
     let vertex_shaders = create_shader_programs(read_vertex_shaders_into_memory(), gl::VERTEX_SHADER);
@@ -63,6 +63,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let game_state = GameState{
+        camera_mode: false
     };
 
     let game = Game{
@@ -90,12 +91,17 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
         }]
     };
 
+    let mouse_context = MouseContext{
+        sensitivity: 10.0
+    };
+
     (GameContext {
         shader_context,
         window_context,
         object_context,
         entity_context,
         keyboard_context,
+        mouse_context,
         game,
     }, events)
 }

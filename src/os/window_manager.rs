@@ -3,7 +3,7 @@ use glfw::{Context, GlfwReceiver, Key, PWindow, Window, WindowEvent};
 
 use crate::graphics::opengl::{create_program, create_shader_programs, init_renderer, link_shaders, render};
 use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
-use crate::state::context::{EntityContext, Game, GameContext, ShaderContext, WindowContext, WindowProperties};
+use crate::state::context::{Cursor, EntityContext, Game, GameContext, ShaderContext, WindowContext, WindowProperties, WindowState};
 
 fn process_events<T> (
     game_context: &mut GameContext<T>,
@@ -56,8 +56,20 @@ pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, Window
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 
+    let (cursor_x_pos, cursor_y_pos) = window.get_cursor_pos();
+    let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+
+    let window_state = WindowState{
+        delta_time: current_time,
+        cursor: Cursor{
+            previous_x_pos: cursor_x_pos,
+            previous_y_pos: cursor_y_pos,
+        }
+    };
+
     (WindowContext{
         window,
+        window_state,
         window_properties,
         glfw
     }, events)
@@ -76,12 +88,12 @@ pub fn start_opengl_window_manager<'a, T>(
 
     while !game_context.window_context.window.should_close() {
         let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-        let delta_time = current_time - previous_time;
+        game_context.window_context.window_state.delta_time = current_time - previous_time;
 
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
         init_renderer(&mut game_context.window_context);
-        render(&game_context.entity_context, delta_time);
+        render(&game_context.entity_context);
         game_render_event(&mut game_context);
 
         game_context.window_context.window.swap_buffers();

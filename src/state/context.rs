@@ -10,8 +10,19 @@ pub struct WindowProperties {
     pub height: u32,
 }
 
+pub struct Cursor {
+    pub previous_x_pos: f64,
+    pub previous_y_pos: f64
+}
+
+pub struct WindowState {
+    pub delta_time: u128,
+    pub cursor: Cursor
+}
+
 pub struct WindowContext {
     pub window: PWindow,
+    pub window_state: WindowState,
     pub window_properties: WindowProperties,
     pub glfw: Glfw
 }
@@ -41,6 +52,10 @@ pub struct KeyboardContext {
     pub keymap: HashMap<String, KeyActivity>
 }
 
+pub struct MouseContext {
+    pub sensitivity: f64
+}
+
 pub struct Game<T> {
     pub state: T
 }
@@ -51,5 +66,6 @@ pub struct GameContext<T> {
     pub object_context: ObjectContext,
     pub entity_context: EntityContext,
     pub keyboard_context: KeyboardContext,
+    pub mouse_context: MouseContext,
     pub game: Game<T>
 }

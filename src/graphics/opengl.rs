@@ -195,7 +195,7 @@ pub fn init_renderer(window_context: &mut WindowContext) {
 }
 
 
-pub fn render(context: &EntityContext, _delta_time: u128) {
+pub fn render(context: &EntityContext) {
     //print_fps(delta_time);
     draw_entities(context);
 }

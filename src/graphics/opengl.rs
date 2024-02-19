@@ -174,7 +174,7 @@ fn draw_entity(entity_3d: &Entity3d, camera: &Camera) {
 fn draw_entities(context: &EntityContext) {
     context.entities
         .iter()
-        .for_each(|entity| draw_entity(entity, &context.camera[0]));
+        .for_each(|entity| draw_entity(entity, &context.cameras[0]));
 }
 
 

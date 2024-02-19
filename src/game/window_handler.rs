@@ -1,5 +1,6 @@
 use nalgebra::clamp;
 use crate::game::context::GameState;
+use crate::game::context::Mode::CAMERA;
 use crate::state::context::{GameContext, WindowContext, WindowState};
 
 fn limited_delta_time(delta_time: u128) -> f64 {
@@ -22,9 +23,12 @@ fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_po
 pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64) {
     let delta_time = limited_delta_time(game_context.window_context.window_state.delta_time);
 
-    if game_context.game.state.camera_mode {
-        let (x_acceleration, y_acceleration) = calculate_cursor_acceleration(game_context, x_pos, y_pos, delta_time);
-        println!("delta: {}, x acceleration {}, y acceleration {}", delta_time, x_acceleration, y_acceleration);
+    if game_context.game.state.mode == CAMERA {
+        let (acceleration_x, acceleration_y) = calculate_cursor_acceleration(game_context, x_pos, y_pos, delta_time);
+        //println!("delta: {}, x acceleration {}, y acceleration {}", delta_time, x_acceleration, y_acceleration);
+        let mut camera_rotation = &mut game_context.entity_context.cameras[0].transform.rotation;
+        camera_rotation.x = camera_rotation.x + acceleration_x as f32;
+        camera_rotation.y = camera_rotation.y + acceleration_y as f32;
         // println!("{}", diff_delta_time);
         // println!("{}", acceleration);
     }

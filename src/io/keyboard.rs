@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use glfw::{Action, Key};
 use crate::state::context::{GameContext};
 
-#[derive(Debug)]
+#[derive(Clone)]
 pub enum KeyActivity {
     UP,
     DOWN,

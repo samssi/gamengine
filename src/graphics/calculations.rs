@@ -9,8 +9,10 @@ fn to_point3(vector_3d: &Vector3d) -> Point3<f32> {
 
 pub fn apply_3d_transformations(entity_3d: &Entity3d, camera: &Camera) -> Matrix4<f32> {
     let eye = to_point3(&camera.transform.position);
+    let rotation_matrix = Matrix4::from_scaled_axis(Vector3::new(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z));
+
     let target = to_point3(&camera.target);
-    let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
+    let view = Matrix4::look_at_rh(&eye, &target, &Vector3::x()) * rotation_matrix;
 
     let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);
     let translation_matrix = Matrix4::new_translation(&translation_vector);

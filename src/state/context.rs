@@ -44,7 +44,7 @@ pub struct ObjectContext {
 }
 
 pub struct EntityContext {
-    pub camera: Vec<Camera>,
+    pub cameras: Vec<Camera>,
     pub entities: Vec<Entity3d>,
 }
 

@@ -1,3 +1,8 @@
+#[derive(PartialEq)]
+pub enum Mode {
+    CAMERA,
+    OBJECT
+}
 pub struct GameState {
-    pub camera_mode: bool
+    pub mode: Mode
 }

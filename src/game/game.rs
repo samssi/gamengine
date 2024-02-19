@@ -86,7 +86,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
             transform: Transform::new_zero_transform_with_position(Vector3d {
                 x: 0.0,
                 y: 0.0,
-                z: 400.0,
+                z: 600.0,
             }),
             target: Vector3d::zero_vector()
         }]

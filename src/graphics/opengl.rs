@@ -4,7 +4,7 @@ use std::{mem, ptr};
 use std::collections::HashMap;
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
-use crate::graphics::calculations::apply_3d_transformations;
+use crate::graphics::calculations::apply_3d_transformations_perspective;
 use crate::state::context::{ShaderContext, WindowContext};
 use crate::state::context::EntityContext;
 
@@ -159,7 +159,7 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
 
 fn draw_entity(entity_3d: &Entity3d, camera: &Camera) {
     unsafe {
-        let final_matrix = apply_3d_transformations(&entity_3d, camera);
+        let final_matrix = apply_3d_transformations_perspective(&entity_3d, camera);
         let matrix_data = final_matrix.as_slice();
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
 

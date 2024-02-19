@@ -5,21 +5,34 @@ use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::io::keyboard::{key_to_string, KeyActivity};
 use crate::state::context::{Game, GameContext};
 
+fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<KeyActivity>) {
+    let camera = &mut game_context.entity_context.cameras[0];
+
+    match key_activity {
+        Some(KeyActivity::LEFT) => {
+            let x_position = camera.transform.position.x;
+            camera.transform.position.x = x_position - 100.0;
+        }
+        Some(KeyActivity::RIGHT) => {
+            let x_position = camera.transform.position.x;
+            camera.transform.position.x = x_position + 100.0;
+        }
+        Some(KeyActivity::UP) => {
+            let y_position = camera.transform.position.y;
+            camera.transform.position.y = y_position + 100.0;
+        }
+        Some(KeyActivity::DOWN) => {
+            let y_position = camera.transform.position.y;
+            camera.transform.position.y = y_position - 100.0;
+        }
+        _ => {}
+    }
+}
+
 pub fn object_mode(game_context: &mut GameContext<GameState>, key_activity: Option<KeyActivity>) {
     let entity = &mut game_context.entity_context.entities[0];
 
     match key_activity {
-        Some(KeyActivity::MODE) => {
-            let mut camera_mode = &mut game_context.game.state.mode;
-            match camera_mode {
-                CAMERA => {
-                    game_context.game.state.mode = OBJECT
-                }
-                OBJECT => {
-                    game_context.game.state.mode = CAMERA
-                }
-            }
-        }
         Some(KeyActivity::LEFT) => {
             let x_position = entity.transform.position.x;
             entity.transform.position.x = x_position - 10.0;
@@ -74,7 +87,32 @@ pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
                 keymap.get(&key).cloned()
         });
 
-    object_mode(game_context, key_activity);
+    println!("{:?}", game_context.game.state.mode);
+
+    match key_activity {
+        Some(KeyActivity::MODE) => {
+            let mut mode = &mut game_context.game.state.mode;
+            match mode {
+                CAMERA => {
+                    game_context.game.state.mode = OBJECT;
+                }
+                OBJECT => {
+                    game_context.game.state.mode = CAMERA;
+                }
+            }
+        }
+        _ => {}
+    }
+
+    let mut mode = &mut game_context.game.state.mode;
+    match mode {
+        CAMERA => {
+            camera_mode(game_context, key_activity)
+        }
+        OBJECT => {
+            object_mode(game_context, key_activity)
+        }
+    }
 
     // println!("Direction: {:?} pressed", key_activity);
 }

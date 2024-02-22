@@ -1,6 +1,5 @@
 use glfw::Key;
-use crate::entity::entity::Entity3d;
-use crate::game::context::{GameState, Mode};
+use crate::game::context::{GameState};
 use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::io::keyboard::{key_to_string, KeyActivity};
 use crate::state::context::{Game, GameContext};

@@ -1,5 +1,8 @@
 use std::collections::HashMap;
+use std::thread;
+use std::time::Duration;
 use glfw::{GlfwReceiver, Key, WindowEvent};
+use crate::audio::audio::play_audio;
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::entity::structures::{Transform, Vector3d};
@@ -113,6 +116,8 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
 
 pub fn start() {
     let (game_context, events) = init_game();
+    // let audio_thread1 = thread::spawn(|| { play_audio() });
+
 
     start_opengl_window_manager(
         game_context,
@@ -120,5 +125,7 @@ pub fn start() {
         game_render_event,
         glfw_press_handler,
         glfw_cursor_handler
-    )
+    );
+
+    // audio_thread1.join().unwrap();
 }

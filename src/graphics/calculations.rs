@@ -59,9 +59,6 @@ pub fn apply_3d_transformations_perspective(entity_3d: &Entity3d, camera: &Camer
     let target = to_point3(&camera.target) + to_vector3(&camera.transform.position);
 
 
-    println!("{}", eye);
-    println!("{}", target);
-
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 
     let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);

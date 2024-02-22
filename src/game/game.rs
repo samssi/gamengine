@@ -4,7 +4,7 @@ use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::entity::structures::{Transform, Vector3d};
 use crate::game::context::GameState;
-use crate::game::context::Mode::OBJECT;
+use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::game::keyboard_handler::glfw_press_handler;
 use crate::game::window_handler::glfw_cursor_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
@@ -45,10 +45,10 @@ fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext
 }
 
 fn game_render_event(game_context: &mut GameContext<GameState>) {
-    //let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
-    //rotation.x = rotation.x + 0.01;
-    //rotation.y = rotation.y + 0.01;
-    //rotation.z = rotation.z + 0.01;
+    /*let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
+    rotation.x = rotation.x + 0.01;
+    rotation.y = rotation.y + 0.01;
+    rotation.z = rotation.z + 0.01;*/
 }
 
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
@@ -64,7 +64,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let game_state = GameState{
-        mode: OBJECT
+        mode: CAMERA
     };
 
     let game = Game{
@@ -86,14 +86,18 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
             transform: Transform::new_zero_transform_with_position(Vector3d {
                 x: 0.0,
                 y: 0.0,
-                z: 600.0,
+                z: -250.0,
             }),
-            target: Vector3d::zero_vector()
+            target: Vector3d {
+                x: 0.0,
+                y: 0.0,
+                z: 100.0,
+            }
         }]
     };
 
     let mouse_context = MouseContext{
-        sensitivity: 10.0
+        sensitivity: 40.0
     };
 
     (GameContext {

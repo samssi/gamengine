@@ -10,20 +10,20 @@ fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<K
 
     match key_activity {
         Some(KeyActivity::LEFT) => {
-            let x_position = camera.transform.position.x;
-            camera.transform.position.x = x_position - 100.0;
+            let x_position = camera.target.x;
+            camera.target.x = x_position + 100.0;
         }
         Some(KeyActivity::RIGHT) => {
-            let x_position = camera.transform.position.x;
-            camera.transform.position.x = x_position + 100.0;
+            let x_position = camera.target.x;
+            camera.target.x = x_position - 100.0;
         }
         Some(KeyActivity::UP) => {
-            let y_position = camera.transform.position.y;
-            camera.transform.position.y = y_position + 100.0;
+            let z_position = camera.transform.position.z;
+            camera.transform.position.z = z_position - 100.0;
         }
         Some(KeyActivity::DOWN) => {
-            let y_position = camera.transform.position.y;
-            camera.transform.position.y = y_position - 100.0;
+            let z_position = camera.transform.position.z;
+            camera.transform.position.z = z_position + 100.0;
         }
         _ => {}
     }
@@ -88,6 +88,7 @@ pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
         });
 
     println!("{:?}", game_context.game.state.mode);
+    println!("{:?}", game_context.entity_context.cameras[0]);
 
     match key_activity {
         Some(KeyActivity::MODE) => {

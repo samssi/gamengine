@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Vector3d {
     pub x: f32,
     pub y: f32,
@@ -21,6 +22,7 @@ impl Vector3d {
     }
 }
 
+#[derive(Debug)]
 pub struct Transform {
     pub position: Vector3d,
     pub rotation: Vector3d,

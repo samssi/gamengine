@@ -60,7 +60,7 @@ pub fn wavefront_object_as_triangle_points_array(wavefront_object: WavefrontObje
 }
 
 // TODO: temp
-const SCALE_FACTOR: f32 = 500.0;
+const SCALE_FACTOR: f32 = 3000.0;
 
 pub fn wavefront_object_as_points(file_content: &String) -> Vec<f32> {
     let wavefront_object = parse_points_from_object_file(file_content);

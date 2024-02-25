@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::graphics::calculations::apply_3d_transformations_perspective;
-use crate::state::context::{ShaderContext, WindowContext};
+use crate::state::context::{GameContext, ShaderContext, WindowContext};
 use crate::state::context::EntityContext;
 
 
@@ -157,9 +157,9 @@ pub fn create_shader_programs(shaders: HashMap<String, String>, shader_type: GLe
     shader_program_map
 }
 
-fn draw_entity(entity_3d: &Entity3d, camera: &Camera) {
+fn draw_entity<T>(game_context: &GameContext<T>, entity_3d: &Entity3d, camera: &Camera) {
     unsafe {
-        let final_matrix = apply_3d_transformations_perspective(&entity_3d, camera);
+        let final_matrix = apply_3d_transformations_perspective(game_context, &entity_3d, camera);
         let matrix_data = final_matrix.as_slice();
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
 
@@ -171,10 +171,10 @@ fn draw_entity(entity_3d: &Entity3d, camera: &Camera) {
     }
 }
 
-fn draw_entities(context: &EntityContext) {
-    context.entities
+fn draw_entities<T>(game_context: &mut GameContext<T>) {
+    game_context.entity_context.entities
         .iter()
-        .for_each(|entity| draw_entity(entity, &context.cameras[0]));
+        .for_each(|entity| draw_entity(&game_context, entity, &game_context.entity_context.cameras[0]));
 }
 
 
@@ -195,7 +195,7 @@ pub fn init_renderer(window_context: &mut WindowContext) {
 }
 
 
-pub fn render(context: &EntityContext) {
+pub fn render<T>(game_context: &mut GameContext<T>) {
     //print_fps(delta_time);
-    draw_entities(context);
+    draw_entities(game_context);
 }

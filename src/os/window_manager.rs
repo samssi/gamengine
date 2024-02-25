@@ -76,7 +76,7 @@ pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, Window
 }
 
 pub fn start_opengl_window_manager<'a, T>(
-    mut game_context: GameContext<T>,
+    game_context: &mut GameContext<T>,
     events: GlfwReceiver<(f64, WindowEvent)>,
     game_render_event: fn(game_context: &mut GameContext<T>),
     glfw_press_handler: fn(game_context: &mut GameContext<T>, key: Key),
@@ -93,13 +93,13 @@ pub fn start_opengl_window_manager<'a, T>(
         previous_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
 
         init_renderer(&mut game_context.window_context);
-        render(&game_context.entity_context);
-        game_render_event(&mut game_context);
+        render(game_context);
+        game_render_event(game_context);
 
         game_context.window_context.window.swap_buffers();
         game_context.window_context.glfw.poll_events();
 
         // process_cursor(&mut game_context);
-        process_events(&mut game_context, &events, glfw_press_handler, glfw_cursor_handler)
+        process_events(game_context, &events, glfw_press_handler, glfw_cursor_handler)
     }
 }

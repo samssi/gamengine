@@ -2,6 +2,7 @@ use nalgebra::{Isometry3, Matrix4, Perspective3, Point3, Rotation3, Unit, Vector
 use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::Vector3d;
+use crate::state::context::GameContext;
 
 fn to_point3(vector_3d: &Vector3d) -> Point3<f32> {
     Point3::new(vector_3d.x, vector_3d.y, vector_3d.z)
@@ -11,7 +12,7 @@ fn to_vector3(vector_3d: &Vector3d) -> Vector3<f32> {
     Vector3::new(vector_3d.x, vector_3d.y, vector_3d.z)
 }
 
-pub fn apply_3d_transformations_perspective(entity_3d: &Entity3d, camera: &Camera) -> Matrix4<f32> {
+pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, entity_3d: &Entity3d, camera: &Camera) -> Matrix4<f32> {
     /*
         let eye = Point3::new(0.0, 0.0, 600.0);
         let target = Point3::new(0.0, 0.0, 0.0);
@@ -71,7 +72,8 @@ pub fn apply_3d_transformations_perspective(entity_3d: &Entity3d, camera: &Camer
     let scaling_vector = &Vector3::new(entity_3d.transform.scale.x, entity_3d.transform.scale.y, entity_3d.transform.scale.z);
     let scale_matrix = Matrix4::new_nonuniform_scaling(scaling_vector);
 
-    let projection = Perspective3::new(16.0 / 9.0, 3.14 / 2.0, 1.0, 1000.0);
+    let aspect = game_context.window_context.window_properties.width as f32 / game_context.window_context.window_properties.height as f32;
+    let projection = Perspective3::new(aspect, 3.14 / 2.0, 1.0, 1000.0);
     let model_view = view * translation_matrix * rotation_matrix * scale_matrix;
 
     let model_view_projection = projection.as_matrix() * model_view;

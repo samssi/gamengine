@@ -115,12 +115,12 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
 }
 
 pub fn start() {
-    let (game_context, events) = init_game();
+    let (mut game_context, events) = init_game();
     // let audio_thread1 = thread::spawn(|| { play_audio() });
 
 
     start_opengl_window_manager(
-        game_context,
+        &mut game_context,
         events,
         game_render_event,
         glfw_press_handler,

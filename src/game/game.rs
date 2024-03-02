@@ -9,6 +9,7 @@ use crate::entity::structures::{Transform, Vector3d};
 use crate::game::context::GameState;
 use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::game::keyboard_handler::glfw_press_handler;
+use crate::game::scene_creator::{generate_cube_space, single_cube};
 use crate::game::window_handler::glfw_cursor_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
@@ -36,22 +37,11 @@ fn create_shader_context(vertex_shader: &str, fragment_shader: &str) -> ShaderCo
     }
 }
 
-fn asset_entities(shader_context: &ShaderContext, object_context: &ObjectContext) -> Vec<Entity3d> {
-    let file_content = object_context.objects.get("casette.obj").expect("file not found");
-    let points = wavefront_object_as_points(file_content);
-    let cassette = Entity3d::with_default_transform(
-        &shader_context,
-        "basic",
-        points,
-    );
-    vec![cassette]
-}
-
 fn game_render_event(game_context: &mut GameContext<GameState>) {
-    /*let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
-    rotation.x = rotation.x + 0.01;
-    rotation.y = rotation.y + 0.01;
-    rotation.z = rotation.z + 0.01;*/
+    let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
+    rotation.x = rotation.x + 1.01;
+    rotation.y = rotation.y + 1.01;
+    rotation.z = rotation.z + 1.01;
 }
 
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
@@ -79,9 +69,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let shader_context = create_shader_context("basic.vert", "basic.frag");
-
-    //let mut entities: Vec<Entity3d> = entities(&shader_context);
-    let mut entities: Vec<Entity3d> = asset_entities(&shader_context, &object_context);
+    let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
 
     let entity_context = EntityContext{
         entities,
@@ -89,9 +77,9 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
             transform: Transform::new_zero_transform_with_position(Vector3d {
                 x: 0.0,
                 y: 0.0,
-                z: -250.0,
+                z: 0.0,
             }),
-            distance: 350.0,
+            distance: 300.0,
             near: 1.0,
             far: 1000.0
         }]

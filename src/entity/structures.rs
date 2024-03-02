@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vector3d {
     pub x: f32,
     pub y: f32,

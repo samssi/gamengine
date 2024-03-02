@@ -23,7 +23,7 @@ pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, en
     let camera_translation_vector = to_vector3(&entity_3d.transform.position);
 
 
-    let radius = 350.0;
+    let radius = camera.distance;
     let new_x = f32::cos(to_radians(camera.transform.rotation.z)) * radius;
     // let new_y = f32::sin(to_radians(camera.transform.rotation.y)) * radius;
     let new_z = f32::sin(to_radians(camera.transform.rotation.z)) * radius;

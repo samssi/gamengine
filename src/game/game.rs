@@ -91,16 +91,14 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
                 y: 0.0,
                 z: -250.0,
             }),
-            target: Vector3d {
-                x: 0.0,
-                y: 0.0,
-                z: 100.0,
-            }
+            distance: 350.0,
+            near: 1.0,
+            far: 1000.0
         }]
     };
 
     let mouse_context = MouseContext{
-        sensitivity: 40.0
+        sensitivity: 100.0
     };
 
     (GameContext {

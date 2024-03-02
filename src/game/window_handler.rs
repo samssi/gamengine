@@ -8,7 +8,7 @@ fn limited_delta_time(delta_time: u128) -> f64 {
     clamp(new_delta, -1.0, 1.0)
 }
 
-fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64, delta_time: f64) -> (f64, f64) {
+fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64, delta_time: f64) -> (f32, f32) {
     let sensitivity = game_context.mouse_context.sensitivity;
     let window_width = game_context.window_context.window_properties.width as f64;
     let window_height = game_context.window_context.window_properties.height as f64;
@@ -17,7 +17,7 @@ fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_po
 
     let acceleration_x = (x_pos - previous_x_pos) / window_width * sensitivity * delta_time;
     let acceleration_y = (y_pos - previous_y_pos) / window_height * sensitivity * delta_time;
-    (acceleration_x, acceleration_y)
+    (acceleration_x as f32, acceleration_y as f32)
 }
 
 pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64) {
@@ -25,12 +25,9 @@ pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64
 
     if game_context.game.state.mode == CAMERA {
         let (acceleration_x, acceleration_y) = calculate_cursor_acceleration(game_context, x_pos, y_pos, delta_time);
-        //println!("delta: {}, x acceleration {}, y acceleration {}", delta_time, x_acceleration, y_acceleration);
         let mut camera_rotation = &mut game_context.entity_context.cameras[0].transform.rotation;
-        camera_rotation.x = camera_rotation.x + acceleration_x as f32;
-        camera_rotation.y = camera_rotation.y + acceleration_y as f32;
-        // println!("{}", diff_delta_time);
-        // println!("{}", acceleration);
+        camera_rotation.z = camera_rotation.z + acceleration_x;
+        camera_rotation.y = camera_rotation.y + acceleration_y;
     }
 
     game_context.window_context.window_state.cursor.previous_x_pos = x_pos;

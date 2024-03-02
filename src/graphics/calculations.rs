@@ -1,4 +1,5 @@
-use nalgebra::{Isometry3, Matrix4, Perspective3, Point3, Rotation3, Unit, Vector3};
+use std::f32::consts::PI;
+use nalgebra::{ArrayStorage, Const, Isometry3, Matrix, Matrix4, OMatrix, Perspective3, Point3, Rotation3, U4, Unit, Vector3};
 use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::Vector3d;
@@ -12,68 +13,36 @@ fn to_vector3(vector_3d: &Vector3d) -> Vector3<f32> {
     Vector3::new(vector_3d.x, vector_3d.y, vector_3d.z)
 }
 
+fn to_radians(degrees: f32) -> f32 {
+    degrees * PI / 180.0
+}
+
+
 pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, entity_3d: &Entity3d, camera: &Camera) -> Matrix4<f32> {
-    /*
-        let eye = Point3::new(0.0, 0.0, 600.0);
-        let target = Point3::new(0.0, 0.0, 0.0);
-     */
-    //let eye = to_point3(&camera.transform.position);
-    /*let eye = Point3::new(0.0, 0.0, 600.0);
-    println!("{:?}", &camera.transform.rotation);
-    let rotation_matrix = Matrix4::from_scaled_axis(Vector3::new(camera.transform.rotation.y, camera.transform.rotation.x, camera.transform.rotation.z));
-
-    //let translation_vec = to_vector3(&camera.transform.rotation);
-    //let translation_mat = Matrix4::new_translation(&translation_vec);
-
-    let target = to_point3(&camera.transform.position);
-    //let target =
-
-    let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());*/
-    /*
-    let eye_rotation_vector = to_vector3(&camera.transform.rotation);
-    let eye_rotation_matrix = Matrix4::from_scaled_axis(eye_rotation_vector);
-     */
-
-    /*
-    let eye_translation_vector = to_vector3(&camera.target) + to_vector3(&camera.transform.position);
-    let eye_translation_matrix = Matrix4::new_translation(&eye_translation_vector);
-
-    let camera_rotation_vector = to_vector3(&camera.transform.rotation);
-    // TODO: this is radians
-    let camera_rotation_matrix = Matrix4::from_scaled_axis(camera_rotation_vector);
-
-    let eye_view_matrix = (eye_translation_matrix * camera_rotation_matrix);
-
-    let foo = Matrix4::from_data(eye_view_matrix.data);
-
-    let up = Vector3::y();
-    let eye = Vector3::try_from(foo).unwrap();
-
-    let target = to_point3(&camera.target) + to_vector3(&camera.transform.position);
-
-    let view = Matrix4::face_towards(&eye, &target, &up);*/
-
-    //let view = Matrix4::look_at_rh(&eye, &target, &up);
-
     let eye = to_point3(&camera.transform.position);
-    // let target = to_point3(&camera.target);
-    let target = to_point3(&camera.target) + to_vector3(&camera.transform.position);
+    let camera_translation_vector = to_vector3(&entity_3d.transform.position);
 
+
+    let radius = 350.0;
+    let new_x = f32::cos(to_radians(camera.transform.rotation.z)) * radius;
+    // let new_y = f32::sin(to_radians(camera.transform.rotation.y)) * radius;
+    let new_z = f32::sin(to_radians(camera.transform.rotation.z)) * radius;
+    let target = Point3::new(new_x, camera.transform.rotation.y, new_z);
 
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 
     let translation_vector = Vector3::new(entity_3d.transform.position.x, entity_3d.transform.position.y, entity_3d.transform.position.z);
     let translation_matrix = Matrix4::new_translation(&translation_vector);
 
-    let rotation_vector = Vector3::new(entity_3d.transform.rotation.x, entity_3d.transform.rotation.y, entity_3d.transform.rotation.z);
-    // TODO: this is radians
+    let rotation_vector = Vector3::new(to_radians(entity_3d.transform.rotation.x), to_radians(entity_3d.transform.rotation.y), to_radians(entity_3d.transform.rotation.z));
     let rotation_matrix = Matrix4::from_scaled_axis(rotation_vector);
 
-    let scaling_vector = &Vector3::new(entity_3d.transform.scale.x, entity_3d.transform.scale.y, entity_3d.transform.scale.z);
-    let scale_matrix = Matrix4::new_nonuniform_scaling(scaling_vector);
+    let scaling_vector = Vector3::new(entity_3d.transform.scale.x, entity_3d.transform.scale.y, entity_3d.transform.scale.z);
+    let scale_matrix = Matrix4::new_nonuniform_scaling(&scaling_vector);
 
     let aspect = game_context.window_context.window_properties.width as f32 / game_context.window_context.window_properties.height as f32;
-    let projection = Perspective3::new(aspect, 3.14 / 2.0, 1.0, 1000.0);
+    let projection = Perspective3::new(aspect, 3.14 / 2.0, camera.near, camera.far);
+
     let model_view = view * translation_matrix * rotation_matrix * scale_matrix;
 
     let model_view_projection = projection.as_matrix() * model_view;

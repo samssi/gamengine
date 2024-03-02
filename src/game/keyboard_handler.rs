@@ -9,20 +9,21 @@ fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<K
 
     match key_activity {
         Some(KeyActivity::LEFT) => {
-            let x_position = camera.target.x;
-            camera.target.x = x_position + 100.0;
+            let mut x_position = camera.transform.position.x;
+            camera.transform.position.x = x_position - 10.0;
         }
         Some(KeyActivity::RIGHT) => {
-            let x_position = camera.target.x;
-            camera.target.x = x_position - 100.0;
+            let mut x_position = camera.transform.position.x;
+            camera.transform.position.x = x_position + 10.0;
+
         }
         Some(KeyActivity::UP) => {
-            let z_position = camera.transform.position.z;
-            camera.transform.position.z = z_position - 100.0;
+            let mut y_position = camera.transform.position.y;
+            camera.transform.position.y = y_position + 10.0;
         }
         Some(KeyActivity::DOWN) => {
-            let z_position = camera.transform.position.z;
-            camera.transform.position.z = z_position + 100.0;
+            let mut y_position = camera.transform.position.y;
+            camera.transform.position.y = y_position - 10.0;
         }
         _ => {}
     }
@@ -50,11 +51,11 @@ pub fn object_mode(game_context: &mut GameContext<GameState>, key_activity: Opti
         }
         Some(KeyActivity::ROTATE_CLOCKWISE) => {
             let rotation = entity.transform.rotation.z;
-            entity.transform.rotation.z = rotation + 0.1;
+            entity.transform.rotation.z = rotation + 10.0;
         }
         Some(KeyActivity::ROTATE_COUNTER_CLOCKWISE) => {
             let rotation = entity.transform.rotation.z;
-            entity.transform.rotation.z = rotation - 0.1;
+            entity.transform.rotation.z = rotation - 10.0;
         }
         Some(KeyActivity::SCALE_ALL_UP) => {
             let scale_x = entity.transform.scale.x;

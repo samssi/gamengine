@@ -28,6 +28,7 @@ pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, en
     // let new_y = f32::sin(to_radians(camera.transform.rotation.y)) * radius;
     let new_z = f32::sin(to_radians(camera.transform.rotation.z)) * radius;
     let target = Point3::new(new_x, camera.transform.rotation.y, new_z);
+    //println!("{}", target);
 
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
 

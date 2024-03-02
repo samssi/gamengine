@@ -53,7 +53,8 @@ pub struct KeyboardContext {
 }
 
 pub struct MouseContext {
-    pub sensitivity: f64
+    pub x_sensitivity: f64,
+    pub y_sensitivity: f64
 }
 
 pub struct Game<T> {

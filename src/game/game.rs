@@ -69,6 +69,8 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
 
     let shader_context = create_shader_context("basic.vert", "basic.frag");
     let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
+    //let mut entities: Vec<Entity3d> = single_cube(&shader_context, &object_context);
+    println!("Rendering {} entities.", entities.len());
 
     let entity_context = EntityContext{
         entities,
@@ -85,7 +87,8 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let mouse_context = MouseContext{
-        sensitivity: 1000.0
+        x_sensitivity: 1000.0,
+        y_sensitivity: 5000.0
     };
 
     (GameContext {

@@ -9,14 +9,15 @@ fn limited_delta_time(delta_time: u128) -> f64 {
 }
 
 fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64, delta_time: f64) -> (f32, f32) {
-    let sensitivity = game_context.mouse_context.sensitivity;
+    let x_sensitivity = game_context.mouse_context.x_sensitivity;
+    let y_sensitivity = game_context.mouse_context.y_sensitivity;
     let window_width = game_context.window_context.window_properties.width as f64;
     let window_height = game_context.window_context.window_properties.height as f64;
     let previous_x_pos = game_context.window_context.window_state.cursor.previous_x_pos;
     let previous_y_pos = game_context.window_context.window_state.cursor.previous_y_pos;
 
-    let acceleration_x = (x_pos - previous_x_pos) / window_width * sensitivity * delta_time;
-    let acceleration_y = (y_pos - previous_y_pos) / window_height * sensitivity * delta_time;
+    let acceleration_x = (x_pos - previous_x_pos) / window_width * x_sensitivity * delta_time;
+    let acceleration_y = (y_pos - previous_y_pos) / window_height * y_sensitivity * delta_time;
     (acceleration_x as f32, acceleration_y as f32)
 }
 

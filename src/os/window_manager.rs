@@ -1,5 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-use glfw::{Context, GlfwReceiver, Key, PWindow, Window, WindowEvent};
+use glfw::{Context, CursorMode, GlfwReceiver, Key, PWindow, Window, WindowEvent};
+use glfw::CursorMode::Disabled;
 
 use crate::graphics::opengl::{create_program, create_shader_programs, init_renderer, link_shaders, render};
 use crate::io::keyboard::{handle_keyboard_events, KeyActivity};
@@ -53,6 +54,7 @@ pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, Window
     window.set_key_polling(true);
     window.set_cursor_pos_polling(true);
     window.set_framebuffer_size_polling(true);
+    window.set_cursor_mode(Disabled);
 
     gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
 

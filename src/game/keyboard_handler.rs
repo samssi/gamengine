@@ -1,10 +1,20 @@
+use glfw::CursorMode::{Disabled, Normal};
 use glfw::Key;
-use crate::game::context::{GameState};
+use crate::game::context::{GameState, toggle_cursor_mode};
 use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::io::keyboard::{key_to_string, KeyActivity};
 use crate::state::context::{Game, GameContext};
 
-fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<KeyActivity>) {
+pub fn window_lock(game_context: &mut GameContext<GameState>, key_activity: &Option<KeyActivity>) {
+    match key_activity {
+        Some(KeyActivity::LOCK_MOUSE_INTO_VIEW) => {
+            toggle_cursor_mode(game_context);
+        }
+        _ => {}
+    }
+}
+
+fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: &Option<KeyActivity>) {
     let camera = &mut game_context.entity_context.cameras[0];
 
     match key_activity {
@@ -24,12 +34,12 @@ fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<K
         Some(KeyActivity::DOWN) => {
             let mut z_position = camera.transform.position.z;
             camera.transform.position.z = z_position - 10.0;
-        }
+        },
         _ => {}
     }
 }
 
-pub fn object_mode(game_context: &mut GameContext<GameState>, key_activity: Option<KeyActivity>) {
+pub fn object_mode(game_context: &mut GameContext<GameState>, key_activity: &Option<KeyActivity>) {
     let entity = &mut game_context.entity_context.entities[0];
 
     match key_activity {
@@ -79,17 +89,7 @@ pub fn object_mode(game_context: &mut GameContext<GameState>, key_activity: Opti
     };
 }
 
-pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
-    let key_as_string = key_to_string(key);
-    let key_activity = key_as_string
-        .and_then(|key| {
-            let keymap = &mut game_context.keyboard_context.keymap;
-                keymap.get(&key).cloned()
-        });
-
-    println!("{:?}", game_context.game.state.mode);
-    println!("{:?}", game_context.entity_context.cameras[0]);
-
+fn handle_events(game_context: &mut GameContext<GameState>, key_activity: &Option<KeyActivity>) {
     match key_activity {
         Some(KeyActivity::MODE) => {
             let mut mode = &mut game_context.game.state.mode;
@@ -105,15 +105,26 @@ pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
         _ => {}
     }
 
-    let mut mode = &mut game_context.game.state.mode;
-    match mode {
+    match game_context.game.state.mode {
         CAMERA => {
-            camera_mode(game_context, key_activity)
+            camera_mode(game_context, &key_activity)
         }
         OBJECT => {
-            object_mode(game_context, key_activity)
+            object_mode(game_context, &key_activity)
         }
     }
+}
 
-    // println!("Direction: {:?} pressed", key_activity);
+pub fn glfw_press_handler(game_context: &mut GameContext<GameState>, key: Key) {
+    let key_as_string = key_to_string(key);
+    let key_activity = key_as_string
+        .and_then(|key| {
+            let keymap = &mut game_context.keyboard_context.keymap;
+                keymap.get(&key).cloned()
+        });
+
+    if game_context.game.state.lock_to_window {
+        handle_events(game_context, &key_activity)
+    }
+    window_lock(game_context, &key_activity);
 }

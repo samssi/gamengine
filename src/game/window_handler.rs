@@ -21,7 +21,7 @@ fn calculate_cursor_acceleration(game_context: &mut GameContext<GameState>, x_po
     (acceleration_x as f32, acceleration_y as f32)
 }
 
-pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64) {
+fn handle_cursor(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64) {
     let delta_time = limited_delta_time(game_context.window_context.window_state.delta_time);
 
     if game_context.game.state.mode == CAMERA {
@@ -33,4 +33,10 @@ pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64
 
     game_context.window_context.window_state.cursor.previous_x_pos = x_pos;
     game_context.window_context.window_state.cursor.previous_y_pos = y_pos;
+}
+
+pub fn glfw_cursor_handler(game_context: &mut GameContext<GameState>, x_pos: f64, y_pos: f64) {
+    if game_context.game.state.lock_to_window {
+        handle_cursor(game_context, x_pos, y_pos);
+    }
 }

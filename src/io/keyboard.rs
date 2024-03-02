@@ -12,7 +12,8 @@ pub enum KeyActivity {
     ROTATE_COUNTER_CLOCKWISE,
     SCALE_ALL_UP,
     SCALE_ALL_DOWN,
-    MODE
+    MODE,
+    LOCK_MOUSE_INTO_VIEW
 }
 
 fn string_to_key(key_str: &str) -> Option<Key> {
@@ -23,6 +24,7 @@ fn string_to_key(key_str: &str) -> Option<Key> {
         "d" => Some(Key::D),
         "q" => Some(Key::Q),
         "e" => Some(Key::E),
+        "tab" => Some(Key::Tab),
         "space" => Some(Key::Space),
         "keypad-add" => Some(Key::KpAdd),
         "keypad-subtract" => Some(Key::KpSubtract),
@@ -41,6 +43,7 @@ pub fn key_to_string(key: Key) -> Option<String> {
         Key::Space => Some(String::from("space")),
         Key::KpAdd => Some(String::from("keypad-add")),
         Key::KpSubtract=> Some(String::from("keypad-subtract")),
+        Key::Tab => Some(String::from("tab")),
         _ => None
     }
 }
@@ -56,6 +59,7 @@ pub fn create_keymap() -> HashMap<String, KeyActivity> {
         (String::from("keypad-add"), KeyActivity::SCALE_ALL_UP),
         (String::from("keypad-subtract"), KeyActivity::SCALE_ALL_DOWN),
         (String::from("space"), KeyActivity::MODE),
+        (String::from("tab"), KeyActivity::LOCK_MOUSE_INTO_VIEW),
     ])
 }
 

@@ -40,7 +40,7 @@ pub fn generate_cube_space(shader_context: &ShaderContext, object_context: &Obje
     let cube_positions = vector3d_from_to(Vector3d{x: -1.0, y: -1.0, z: -1.0}, Vector3d{x: 1.0, y: 1.0, z: 1.0}, 100.0);
     let cubes: Vec<Entity3d> = cube_positions.iter().map(|cube_position| {
         create_cube(&shader_context, &object_context, Some(cube_position.clone()))
-    } ).collect();
+    }).collect();
     cubes
 }
 

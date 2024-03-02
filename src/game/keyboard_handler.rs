@@ -18,12 +18,12 @@ fn camera_mode(game_context: &mut GameContext<GameState>, key_activity: Option<K
 
         }
         Some(KeyActivity::UP) => {
-            let mut y_position = camera.transform.position.y;
-            camera.transform.position.y = y_position + 10.0;
+            let mut z_position = camera.transform.position.z;
+            camera.transform.position.z = z_position + 10.0;
         }
         Some(KeyActivity::DOWN) => {
-            let mut y_position = camera.transform.position.y;
-            camera.transform.position.y = y_position - 10.0;
+            let mut z_position = camera.transform.position.z;
+            camera.transform.position.z = z_position - 10.0;
         }
         _ => {}
     }

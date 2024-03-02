@@ -1,8 +1,5 @@
 use std::collections::HashMap;
-use std::thread;
-use std::time::Duration;
-use glfw::{GlfwReceiver, Key, WindowEvent};
-use crate::audio::audio::play_audio;
+use glfw::{GlfwReceiver, WindowEvent};
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::entity::structures::{Transform, Vector3d};
@@ -38,10 +35,12 @@ fn create_shader_context(vertex_shader: &str, fragment_shader: &str) -> ShaderCo
 }
 
 fn game_render_event(game_context: &mut GameContext<GameState>) {
-    let mut rotation = &mut game_context.entity_context.entities[0].transform.rotation;
-    rotation.x = rotation.x + 1.01;
-    rotation.y = rotation.y + 1.01;
-    rotation.z = rotation.z + 1.01;
+    /*for mut entity in &mut game_context.entity_context.entities {
+        let mut rotation = &mut entity.transform.rotation;
+        rotation.x = rotation.x + 1.01;
+        rotation.y = rotation.y + 1.01;
+        rotation.z = rotation.z + 1.01;
+    }*/
 }
 
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
@@ -86,7 +85,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let mouse_context = MouseContext{
-        sensitivity: 100.0
+        sensitivity: 1000.0
     };
 
     (GameContext {

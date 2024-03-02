@@ -35,8 +35,8 @@ fn process_cursor<T>(
 
 pub fn init_opengl_window_manager() -> (WindowContext, GlfwReceiver<(f64, WindowEvent)>) {
     let window_properties = WindowProperties{
-        width: 800,
-        height: 600
+        width: 1600,
+        height: 800
     };
 
     use glfw::fail_on_errors;

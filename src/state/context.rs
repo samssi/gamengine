@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use glfw::{Glfw, PWindow};
 use gl::types::GLuint;
+use image::DynamicImage;
 use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
 use crate::io::keyboard::KeyActivity;
@@ -40,7 +41,8 @@ impl ShaderContext {
 }
 
 pub struct ObjectContext {
-    pub objects: HashMap<String, String>
+    pub objects: HashMap<String, String>,
+    pub textures: HashMap<String, DynamicImage>
 }
 
 pub struct EntityContext {

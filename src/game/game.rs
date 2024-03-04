@@ -10,7 +10,7 @@ use crate::game::scene_creator::{generate_cube_space, single_cube};
 use crate::game::window_handler::glfw_cursor_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
-use crate::io::loader::{read_fragment_shaders_into_memory, read_object_files_into_memory, read_vertex_shaders_into_memory};
+use crate::io::loader::{read_fragment_shaders_into_memory, read_object_files_into_memory, read_texture_images_into_memory, read_vertex_shaders_into_memory};
 use crate::os::window_manager::{init_opengl_window_manager, start_opengl_window_manager};
 use crate::state::context::{EntityContext, Game, GameContext, KeyboardContext, MouseContext, ObjectContext, ShaderContext};
 
@@ -29,7 +29,7 @@ fn create_shader_context(vertex_shader: &str, fragment_shader: &str) -> ShaderCo
     ShaderContext{
         fragment_shaders,
         vertex_shaders,
-        programs: HashMap::from([(String::from("basic"), program)])
+        programs: HashMap::from([(String::from("textured"), program)])
     }
 }
 
@@ -64,10 +64,11 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let object_context = ObjectContext {
-        objects: read_object_files_into_memory()
+        objects: read_object_files_into_memory(),
+        textures: read_texture_images_into_memory()
     };
 
-    let shader_context = create_shader_context("basic.vert", "basic.frag");
+    let shader_context = create_shader_context("textured.vert", "textured.frag");
     let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
     //let mut entities: Vec<Entity3d> = single_cube(&shader_context, &object_context);
     println!("Rendering {} entities.", entities.len());

@@ -2,6 +2,7 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use std::collections::HashMap;
+use image::DynamicImage;
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::graphics::calculations::apply_3d_transformations_perspective;
@@ -101,39 +102,115 @@ pub fn create_program(vertex_shader: &GLuint, fragment_shader: &GLuint) -> GLuin
                          vertex_shader, fragment_shader))
 }
 
+fn as_stride(value: usize) -> GLsizei {
+    (value * mem::size_of::<GLfloat>()) as GLsizei
+}
+
+fn as_gl_sizei_ptr(vertices: &Vec<f32>) -> GLsizeiptr {
+    (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr
+}
+
+fn as_cvoid(vertices: &Vec<f32>) -> *const c_void {
+    vertices.as_ptr() as *const c_void
+}
+
 pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
 
     unsafe {
-        gl::Enable(gl::CULL_FACE);
-        //gl::Enable(gl::DEPTH_TEST);
         gl::UseProgram(*program);
 
         gl::GenVertexArrays(1, &mut vao);
         gl::GenBuffers(1, &mut vbo);
 
         gl::BindVertexArray(vao);
-
         gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
 
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-            vertices.as_ptr() as *const c_void,
+            as_gl_sizei_ptr(vertices),
+            as_cvoid(vertices),
             gl::STATIC_DRAW,
         );
 
         let attrib_location = get_attrib_location(program, "a_position");
         gl::EnableVertexAttribArray(attrib_location);
         gl::VertexAttribPointer(attrib_location,
-                                3,                              // size (number of components)
-                                gl::FLOAT,                      // type
-                                gl::FALSE,                      // normalized
-                                (3 * mem::size_of::<GLfloat>()) as GLsizei, // stride (byte offset between consecutive generic vertex attributes)
+                                3,
+                                gl::FLOAT,
+                                gl::FALSE,
+                                as_stride(3),
                                 ptr::null());
 
 
+
+        // Unbind VBO and VAO
+        gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+        gl::BindVertexArray(0);
+    }
+    vao
+}
+
+pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &DynamicImage, texture_coordinates: &Vec<f32>) -> GLuint {
+    let mut vao = 0;
+
+    unsafe {
+        let mut position_buffer = 0;
+        let mut texture = 0;
+        let mut texture_buffer = 0;
+
+        gl::UseProgram(*program);
+
+        gl::GenVertexArrays(1, &mut vao);
+        gl::GenBuffers(1, &mut position_buffer);
+
+        gl::BindVertexArray(vao);
+
+        gl::BindBuffer(gl::ARRAY_BUFFER, position_buffer);
+        gl::BufferData(
+            gl::ARRAY_BUFFER,
+            as_gl_sizei_ptr(vertices),
+            vertices.as_ptr() as *const c_void,
+            gl::STATIC_DRAW,
+        );
+
+        // projection
+        let a_position = get_attrib_location(program, "a_position");
+        gl::EnableVertexAttribArray(a_position);
+        gl::VertexAttribPointer(
+            a_position,
+            3,
+            gl::FLOAT,
+            gl::FALSE,
+            as_stride(3),
+            ptr::null());
+
+
+        // textures
+        gl::GenBuffers(1, &mut texture_buffer);
+        gl::BindBuffer(gl::ARRAY_BUFFER, texture_buffer);
+
+        gl::GenTextures(1, &mut texture);
+        gl::BindTexture(gl::TEXTURE_2D, texture);
+        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as GLint /* is this correct? */, image.width() as GLsizei, image.height() as GLsizei, 0, gl::RGB, gl::UNSIGNED_BYTE, image.as_bytes().as_ptr() as *const c_void);
+
+        gl::BufferData(
+            gl::ARRAY_BUFFER,
+            as_gl_sizei_ptr(texture_coordinates),
+            texture_coordinates.as_ptr() as *const c_void,
+            gl::STATIC_DRAW
+        );
+
+        let a_texture_coordinates = get_attrib_location(program, "a_texture_coordinates");
+        gl::EnableVertexAttribArray(a_texture_coordinates);
+        gl::VertexAttribPointer(
+            a_texture_coordinates,
+            2,
+            gl::FLOAT,
+            gl::FALSE,
+            as_stride(2),
+            ptr::null());
 
         // Unbind VBO and VAO
         gl::BindBuffer(gl::ARRAY_BUFFER, 0);
@@ -188,7 +265,12 @@ fn print_fps(delta_time: u128) {
 pub fn init_renderer(window_context: &mut WindowContext) {
     unsafe {
         gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+
+        gl::Enable(gl::CULL_FACE);
+        //gl::Enable(gl::DEPTH_TEST);
+
         gl::Clear(gl::COLOR_BUFFER_BIT);
+        gl::Clear(gl::DEPTH_BUFFER_BIT);
 
         gl::Viewport(0, 0, window_context.window_properties.width as GLsizei, window_context.window_properties.height as GLsizei);
     }

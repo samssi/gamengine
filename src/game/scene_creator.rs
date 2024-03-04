@@ -1,20 +1,33 @@
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::{Transform, Vector3d};
-use crate::io::object::get_object_as_points;
+use crate::io::object::{get_object_as_points, get_uv_points};
 use crate::state::context::{ObjectContext, ShaderContext};
 
 fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, position: Option<Vector3d>) -> Entity3d {
     let file_content = object_context.objects.get("cube.obj").expect("object not found");
     let points = get_object_as_points(file_content);
+
+    let texture = object_context.textures.get("lemon.png").expect("texture not found");
+    let texture_coordinates = get_uv_points(file_content);
+
+
     match position {
         None => { Entity3d::with_default_transform(
             &shader_context,
-            "basic",
+            texture,
+            "textured",
             points,
-        ) }
+            texture_coordinates
+        )}
         Some(position) => {
-            Entity3d::with_position(&shader_context, points, "basic", position)
-        }
+            Entity3d::with_position(
+                &shader_context,
+                texture,
+                points,
+                texture_coordinates,
+                "textured",
+                position
+            )}
     }
 }
 

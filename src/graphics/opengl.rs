@@ -2,7 +2,7 @@ use std::ffi::{c_void, CString};
 use gl::types::*;
 use std::{mem, ptr};
 use std::collections::HashMap;
-use image::DynamicImage;
+use image::{DynamicImage, EncodableLayout};
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::graphics::calculations::apply_3d_transformations_perspective;
@@ -154,11 +154,14 @@ pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {
 
 pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &DynamicImage, texture_coordinates: &Vec<f32>) -> GLuint {
     let mut vao = 0;
+    let image_rgba8 = image.to_rgba8();
+
 
     unsafe {
         let mut position_buffer = 0;
         let mut texture = 0;
-        let mut texture_buffer = 0;
+        let mut texture_coordinate_buffer = 0;
+
 
         gl::UseProgram(*program);
 
@@ -188,12 +191,27 @@ pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &D
 
 
         // textures
-        gl::GenBuffers(1, &mut texture_buffer);
-        gl::BindBuffer(gl::ARRAY_BUFFER, texture_buffer);
+        let a_texture_coordinates = get_attrib_location(program, "a_texture_coordinates");
+
+        gl::GenBuffers(1, &mut texture_coordinate_buffer);
+        gl::BindBuffer(gl::ARRAY_BUFFER, texture_coordinate_buffer);
 
         gl::GenTextures(1, &mut texture);
         gl::BindTexture(gl::TEXTURE_2D, texture);
-        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as GLint /* is this correct? */, image.width() as GLsizei, image.height() as GLsizei, 0, gl::RGB, gl::UNSIGNED_BYTE, image.as_bytes().as_ptr() as *const c_void);
+        gl::TexImage2D(
+            gl::TEXTURE_2D,
+            0,
+            gl::RGBA as GLsizei /* is this correct? */,
+            image_rgba8.width() as GLsizei,
+            image_rgba8.height() as GLsizei,
+            0,
+            gl::RGBA,
+            gl::UNSIGNED_BYTE,
+            image_rgba8.as_bytes().as_ptr() as *const c_void);
+
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as GLint);
+        gl::GenerateMipmap(gl::TEXTURE_2D);
 
         gl::BufferData(
             gl::ARRAY_BUFFER,
@@ -202,8 +220,6 @@ pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &D
             gl::STATIC_DRAW
         );
 
-        let a_texture_coordinates = get_attrib_location(program, "a_texture_coordinates");
-        gl::EnableVertexAttribArray(a_texture_coordinates);
         gl::VertexAttribPointer(
             a_texture_coordinates,
             2,
@@ -211,6 +227,10 @@ pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &D
             gl::FALSE,
             as_stride(2),
             ptr::null());
+
+        gl::EnableVertexAttribArray(a_texture_coordinates);
+        gl::BindVertexArray(vao);
+
 
         // Unbind VBO and VAO
         gl::BindBuffer(gl::ARRAY_BUFFER, 0);

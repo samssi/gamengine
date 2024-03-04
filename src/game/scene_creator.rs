@@ -7,7 +7,7 @@ fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, p
     let file_content = object_context.objects.get("cube.obj").expect("object not found");
     let points = get_object_as_points(file_content);
 
-    let texture = object_context.textures.get("lemon.png").expect("texture not found");
+    let texture = object_context.textures.get("leppis.png").expect("texture not found");
     let texture_coordinates = get_uv_points(file_content);
 
 

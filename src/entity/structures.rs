@@ -44,4 +44,18 @@ impl Transform {
             scale: Vector3d::one_vector(),
         }
     }
+    pub fn new_transform_with_position_and_rotation(position: Vector3d, rotation: Vector3d) -> Self {
+        Transform {
+            position,
+            rotation,
+            scale: Vector3d::one_vector(),
+        }
+    }
+    pub fn new_transform_with_position_rotation_and_scale(position: Vector3d, rotation: Vector3d, scale: Vector3d) -> Self {
+        Transform {
+            position,
+            rotation,
+            scale,
+        }
+    }
 }

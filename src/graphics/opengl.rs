@@ -284,7 +284,7 @@ fn print_fps(delta_time: u128) {
 
 pub fn init_renderer(window_context: &mut WindowContext) {
     unsafe {
-        gl::ClearColor(0.2, 0.3, 0.3, 1.0);
+        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
 
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);

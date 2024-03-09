@@ -25,9 +25,9 @@ pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, en
 
     let radius = camera.distance;
     let new_x = f32::cos(to_radians(camera.transform.rotation.z)) * radius;
-    // let new_y = f32::sin(to_radians(camera.transform.rotation.y)) * radius;
+    let new_y = f32::sin(to_radians(camera.transform.rotation.y)) * radius;
     let new_z = f32::sin(to_radians(camera.transform.rotation.z)) * radius;
-    let target = Point3::new(new_x, camera.transform.rotation.y, new_z);
+    let target = Point3::new(new_x, new_y, new_z);
     //println!("{}", target);
 
     let view = Matrix4::look_at_rh(&eye, &target, &Vector3::y());
@@ -42,7 +42,7 @@ pub fn apply_3d_transformations_perspective<T>(game_context: &GameContext<T>, en
     let scale_matrix = Matrix4::new_nonuniform_scaling(&scaling_vector);
 
     let aspect = game_context.window_context.window_properties.width as f32 / game_context.window_context.window_properties.height as f32;
-    let projection = Perspective3::new(aspect, 3.14 / 2.0, camera.near, camera.far);
+    let projection = Perspective3::new(aspect, 2.0 / 2.0, camera.near, camera.far);
 
     let model_view = view * translation_matrix * rotation_matrix * scale_matrix;
 

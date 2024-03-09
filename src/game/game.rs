@@ -1,12 +1,9 @@
 use std::collections::HashMap;
 use glfw::{GlfwReceiver, WindowEvent};
-use crate::entity::camera::Camera;
-use crate::entity::entity::{Entity3d};
-use crate::entity::structures::{Transform, Vector3d};
 use crate::game::context::GameState;
+use crate::game::level::{Level, Scene};
 use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::game::keyboard_handler::glfw_press_handler;
-use crate::game::scene_creator::{generate_cube_space, single_cube};
 use crate::game::window_handler::glfw_cursor_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
@@ -55,7 +52,7 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let game_state = GameState{
-        mode: CAMERA,
+        mode: OBJECT,
         lock_to_window: true
     };
 
@@ -69,22 +66,13 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
     };
 
     let shader_context = create_shader_context("textured.vert", "textured.frag");
-    let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
-    //let mut entities: Vec<Entity3d> = single_cube(&shader_context, &object_context);
-    println!("Rendering {} entities.", entities.len());
+    //let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
+    let level1 = Scene::load(&object_context, &shader_context);
+    println!("Rendering {} entities.", level1.entities.len());
 
     let entity_context = EntityContext{
-        entities,
-        cameras: vec![Camera{
-            transform: Transform::new_zero_transform_with_position(Vector3d {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            }),
-            distance: 300.0,
-            near: 1.0,
-            far: 1000.0
-        }]
+        entities: level1.entities,
+        cameras: level1.cameras
     };
 
     let mouse_context = MouseContext{

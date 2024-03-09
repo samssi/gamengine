@@ -17,21 +17,34 @@ fn create_vao_from(shader_context: &ShaderContext, texture: &DynamicImage, progr
 }
 
 impl Entity3d {
-    pub fn with_position(shader_context: &ShaderContext, texture: &DynamicImage, points: Vec<f32>, texture_coordinates: Vec<f32>, program: &str, position: Vector3d) -> Self {
+    pub fn with_position_and_scale(
+        shader_context: &ShaderContext,
+        texture: &DynamicImage,
+        points: Vec<f32>,
+        texture_coordinates: Vec<f32>,
+        program: &str,
+        position: Vector3d,
+        scale: Vector3d
+        ) -> Self {
         let vao = create_vao_from(shader_context, texture, program, &points, &texture_coordinates);
 
         Self {
             points,
             transform: Transform {
                 position,
-                scale: Vector3d::one_vector(),
+                scale,
                 rotation: Vector3d::zero_vector()
             },
             program: shader_context.get_program_or_fail(program),
             vao
         }
     }
-    pub fn with_default_transform(shader_context: &ShaderContext, texture: &DynamicImage, program: &str, points: Vec<f32>, texture_coordinates: Vec<f32>) -> Self {
+    pub fn with_default_transform(
+        shader_context: &ShaderContext,
+        texture: &DynamicImage,
+        program: &str,
+        points: Vec<f32>,
+        texture_coordinates: Vec<f32>) -> Self {
         let vao = create_vao_from(shader_context, &texture, program, &points, &texture_coordinates);
 
         Self {

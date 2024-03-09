@@ -287,7 +287,7 @@ pub fn init_renderer(window_context: &mut WindowContext) {
         gl::ClearColor(0.2, 0.3, 0.3, 1.0);
 
         gl::Enable(gl::CULL_FACE);
-        //gl::Enable(gl::DEPTH_TEST);
+        gl::Enable(gl::DEPTH_TEST);
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
         gl::Clear(gl::DEPTH_BUFFER_BIT);

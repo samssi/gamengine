@@ -56,25 +56,41 @@ pub fn parse_wavefront_object_file(file_content: &String) -> WavefrontObject {
     }
 }
 
-fn wavefront_object_as_triangle_points_array(wavefront_object: WavefrontObject) -> Vec<Vec<f32>> {
-    let elements: Vec<Vec<i32>> = wavefront_object.f.to_vec().into_iter().flatten().collect();
-    let positions: Vec<i32> = elements.into_iter().map(|element| element[0] - 1).collect();
+fn extract_data_from_wavefront_object(faces: Vec<Vec<Vec<i32>>>, coordinates: Vec<Vec<f32>>, index: usize) -> Vec<Vec<f32>> {
+    let elements: Vec<Vec<i32>> = faces.to_vec().into_iter().flatten().collect();
+    let positions: Vec<i32> = elements.into_iter().map(|element| element[index] - 1).collect();
     positions.into_iter().map(|position| {
-        let triangles =  &wavefront_object.v[position as usize];
+        let triangles =  &coordinates[position as usize];
         triangles.to_vec()
     }).collect()
 }
 
-// TODO: temp
-const SCALE_FACTOR: f32 = 10.0;
-
-pub fn get_object_as_points(wavefront_file_content: &String) -> Vec<f32> {
-    let wavefront_object = parse_wavefront_object_file(wavefront_file_content);
-    let triangle_points_array = wavefront_object_as_triangle_points_array(wavefront_object);
-    triangle_points_array.into_iter().flatten().map(|item| item * SCALE_FACTOR).collect()
+fn geometric_vertices_from_wavefront_object(wavefront_object: WavefrontObject) -> Vec<Vec<f32>> {
+    extract_data_from_wavefront_object(wavefront_object.f, wavefront_object.v, 0)
 }
 
-pub fn get_uv_points(wavefront_file_content: &String) -> Vec<f32> {
+fn texture_points_from_wavefront_object(wavefront_object: WavefrontObject) -> Vec<Vec<f32>> {
+    extract_data_from_wavefront_object(wavefront_object.f, wavefront_object.vt, 1)
+}
+
+fn normals_from_wavefront_object(wavefront_object: WavefrontObject) -> Vec<Vec<f32>> {
+    extract_data_from_wavefront_object(wavefront_object.f, wavefront_object.vn, 2)
+}
+
+pub fn get_geometric_vertices(wavefront_file_content: &String) -> Vec<f32> {
     let wavefront_object = parse_wavefront_object_file(wavefront_file_content);
-    wavefront_object.vt.into_iter().flatten().collect()
+    let geometric_vertices = geometric_vertices_from_wavefront_object(wavefront_object);
+    geometric_vertices.into_iter().flatten().map(|item| item).collect()
+}
+
+pub fn get_texture_points(wavefront_file_content: &String) -> Vec<f32> {
+    let wavefront_object = parse_wavefront_object_file(wavefront_file_content);
+    let texture_points = texture_points_from_wavefront_object(wavefront_object);
+    texture_points.into_iter().flatten().collect()
+}
+
+pub fn get_normals(wavefront_file_content: &String) -> Vec<f32> {
+    let wavefront_object = parse_wavefront_object_file(wavefront_file_content);
+    let normals = normals_from_wavefront_object(wavefront_object);
+    normals.into_iter().flatten().collect()
 }

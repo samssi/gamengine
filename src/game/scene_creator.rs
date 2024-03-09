@@ -1,14 +1,14 @@
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::{Transform, Vector3d};
-use crate::io::object::{get_object_as_points, get_uv_points};
+use crate::io::object::{get_geometric_vertices, get_texture_points};
 use crate::state::context::{ObjectContext, ShaderContext};
 
 fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, position: Option<Vector3d>) -> Entity3d {
     let file_content = object_context.objects.get("cube.obj").expect("object not found");
-    let points = get_object_as_points(file_content);
+    let points = get_geometric_vertices(file_content);
 
     let texture = object_context.textures.get("leppis.png").expect("texture not found");
-    let texture_coordinates = get_uv_points(file_content);
+    let texture_coordinates = get_texture_points(file_content);
 
 
     match position {
@@ -20,13 +20,14 @@ fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, p
             texture_coordinates
         )}
         Some(position) => {
-            Entity3d::with_position(
+            Entity3d::with_position_and_scale(
                 &shader_context,
                 texture,
                 points,
                 texture_coordinates,
                 "textured",
-                position
+                position,
+                Vector3d{x: 50.0, y: 50.0, z: 50.0}
             )}
     }
 }

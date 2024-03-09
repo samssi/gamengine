@@ -27,7 +27,7 @@ fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, p
                 texture_coordinates,
                 "textured",
                 position,
-                Vector3d{x: 50.0, y: 50.0, z: 50.0}
+                Vector3d{x: 20.0, y: 20.0, z: 20.0}
             )}
     }
 }

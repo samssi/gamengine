@@ -6,29 +6,9 @@ use image::{DynamicImage, EncodableLayout};
 use crate::entity::camera::Camera;
 use crate::entity::entity::{Entity3d};
 use crate::graphics::calculations::apply_3d_transformations_perspective;
+use crate::graphics::opengl_util::{as_c_void, as_glsizeiptr, get_attrib_location, get_uniform_location};
 use crate::state::context::{GameContext, ShaderContext, WindowContext};
 use crate::state::context::EntityContext;
-
-
-fn get_attrib_location(program: &GLuint, attribute_name: &str) -> GLuint {
-    let attribute_name_cstring = CString::new(attribute_name).expect("CString conversion failed");
-    unsafe {
-        let location = gl::GetAttribLocation(*program, attribute_name_cstring.as_ptr());
-        if location != -1 {
-            location as GLuint
-        }
-        else {
-            panic!("Failed to retrieve attrib location")
-        }
-    }
-}
-
-fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
-    let attribute_name_cstring = CString::new(uniform_name).expect("CString conversion failed");
-    unsafe {
-        gl::GetUniformLocation(program, attribute_name_cstring.as_ptr())
-    }
-}
 
 fn create_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     let c_str_source = CString::new(source).expect("CString::new failed");
@@ -106,14 +86,6 @@ fn as_stride(value: usize) -> GLsizei {
     (value * mem::size_of::<GLfloat>()) as GLsizei
 }
 
-fn as_gl_sizei_ptr(vertices: &Vec<f32>) -> GLsizeiptr {
-    (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr
-}
-
-fn as_cvoid(vertices: &Vec<f32>) -> *const c_void {
-    vertices.as_ptr() as *const c_void
-}
-
 pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {
     let mut vbo = 0;
     let mut vao = 0;
@@ -129,8 +101,8 @@ pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {
 
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            as_gl_sizei_ptr(vertices),
-            as_cvoid(vertices),
+            as_glsizeiptr(vertices),
+            as_c_void(vertices),
             gl::STATIC_DRAW,
         );
 
@@ -173,7 +145,7 @@ pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &D
         gl::BindBuffer(gl::ARRAY_BUFFER, position_buffer);
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            as_gl_sizei_ptr(vertices),
+            as_glsizeiptr(vertices),
             vertices.as_ptr() as *const c_void,
             gl::STATIC_DRAW,
         );
@@ -215,7 +187,7 @@ pub fn create_vao_with_textures(program: &GLuint, vertices: &Vec<f32>, image: &D
 
         gl::BufferData(
             gl::ARRAY_BUFFER,
-            as_gl_sizei_ptr(texture_coordinates),
+            as_glsizeiptr(texture_coordinates),
             texture_coordinates.as_ptr() as *const c_void,
             gl::STATIC_DRAW
         );

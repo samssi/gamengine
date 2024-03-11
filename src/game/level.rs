@@ -18,13 +18,19 @@ fn create_cameras() -> Vec<Camera> {
         transform: Transform::new_transform_with_position_and_rotation(
             Vector3d { x: 1.7, y: 0.0, z: 0.0 },
             Vector3d{ x: 0.0, y: 0.0, z: 180.0 }
-            /*Vector3d { x: 2.0, y: 2.0, z: 0.0 },
-            Vector3d{ x: 0.0, y: -1.0, z: 180.0 }*/
         ),
         distance: 100.0,
         near: 1.0,
         far: 1000.0
     }]
+}
+
+pub fn leppis_default_transform() -> Transform {
+    Transform::new_transform_with_position_rotation_and_scale(
+        Vector3d{x: -1.35, y: 0.85, z: 0.0 },
+        Vector3d{x: 90.0, y: 0.0, z: 0.0 },
+        Vector3d{x: 1.2, y: 1.2, z: 1.2}
+    )
 }
 
 fn create_leppis_plane(object_context: &ObjectContext, shader_context: &ShaderContext) -> Entity3d {
@@ -39,11 +45,7 @@ fn create_leppis_plane(object_context: &ObjectContext, shader_context: &ShaderCo
         texture,
         "textured",
         points,
-        Transform::new_transform_with_position_rotation_and_scale(
-            Vector3d{x: -1.35, y: 0.85, z: 0.0 },
-            Vector3d{x: 90.0, y: 0.0, z: 0.0 },
-            Vector3d{x: 1.2, y: 1.2, z: 1.2}
-        ),
+        leppis_default_transform(),
         texture_coordinates,
     )
 }

@@ -1,7 +1,35 @@
-use gl::types::{GLenum, GLuint};
-use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, ShaderType};
+use std::any::Any;
+use std::ptr;
+use gl::types::{GLenum, GLint, GLuint};
+use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, get_compilation_status};
 
-struct Shader {
+pub enum ShaderType {
+    FragmentShader,
+    VertexShader
+}
+
+pub fn to_gl_shader_type(shader_type: &ShaderType) -> GLenum {
+    match shader_type {
+        ShaderType::VertexShader => { gl::VERTEX_SHADER }
+        ShaderType::FragmentShader => { gl::FRAGMENT_SHADER }
+    }
+}
+
+pub fn expect_shader_type_or_panic(shader: &Shader, shader_type: ShaderType) -> Result<(), &str> {
+    /*
+    if !&shader.shader_type == shader_type {
+        Err("Shader type mismatch!")
+    }*/
+    if matches!(&shader.shader_type, shader_type) {
+        Err("Shader type mismatch!")
+    }
+    else {
+        Ok(())
+    }
+}
+
+pub struct Shader {
+    shader: u32,
     shader_type: ShaderType,
     shader_source_code: String
 }
@@ -10,15 +38,52 @@ impl Shader {
     fn create(shader_type: ShaderType, shader_source_code: String) -> Self {
         unsafe {
             let gl_shader_source = as_c_string(&shader_source_code);
+            let gl_shader = gl::CreateShader(to_gl_shader_type(&shader_type));
 
-            Shader{shader_type, shader_source_code}
+            gl::ShaderSource(gl_shader, 1, &gl_shader_source.as_ptr(), ptr::null());
+            gl::CompileShader(gl_shader);
+            get_compilation_status(gl_shader).expect("Shader compilation failure!");
+
+            Shader {shader: gl_shader, shader_type, shader_source_code}
         }
     }
 }
 
+
+
 impl Drop for Shader {
     fn drop(&mut self) {
-        todo!()
+        unsafe { gl::DeleteShader(self.shader as GLuint) }
+    }
+}
+
+struct Program {
+    program: u32
+}
+
+impl Program {
+    fn create(vertex_shader: &Shader, fragment_shader: &mut Shader) -> Self {
+        let error_message = "Wrong type of shader as parameter";
+        expect_shader_type_or_panic(&vertex_shader, ShaderType::VertexShader).expect(error_message);
+        expect_shader_type_or_panic(&fragment_shader, ShaderType::FragmentShader).expect(error_message);
+
+        unsafe {
+            let gl_program = gl::CreateProgram();
+
+            gl::AttachShader(gl_program, *(&vertex_shader.shader));
+            gl::AttachShader(gl_program, *(&fragment_shader.shader));
+
+            gl::LinkProgram(gl_program);
+            get_compilation_status(gl_program).expect("Shader linking failure while creating program!");
+
+            Program{program: gl_program}
+        }
+    }
+}
+
+impl Drop for Program {
+    fn drop(&mut self) {
+        unsafe { gl::DeleteProgram(self.program as GLuint) }
     }
 }
 

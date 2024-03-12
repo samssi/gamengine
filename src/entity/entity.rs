@@ -66,7 +66,7 @@ impl Entity3d {
 
         Self {
             points,
-            transform: Transform::new_zero_transform(),
+            transform: Transform::create_zero_transform(),
             program: shader_context.get_program_or_fail(program),
             vao
         }

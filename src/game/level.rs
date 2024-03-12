@@ -15,7 +15,7 @@ pub trait Level {
 
 fn create_cameras() -> Vec<Camera> {
     vec![Camera{
-        transform: Transform::new_transform_with_position_and_rotation(
+        transform: Transform::create_transform_with_position_and_rotation(
             Vector3d { x: 1.7, y: 0.0, z: 0.0 },
             Vector3d{ x: 0.0, y: 0.0, z: 180.0 }
         ),
@@ -26,7 +26,7 @@ fn create_cameras() -> Vec<Camera> {
 }
 
 pub fn leppis_default_transform() -> Transform {
-    Transform::new_transform_with_position_rotation_and_scale(
+    Transform::create_transform_with_position_rotation_and_scale(
         Vector3d{x: -1.35, y: 0.85, z: 0.0 },
         Vector3d{x: 90.0, y: 0.0, z: 0.0 },
         Vector3d{x: 1.2, y: 1.2, z: 1.2}
@@ -62,7 +62,7 @@ fn create_desk(object_context: &ObjectContext, shader_context: &ShaderContext) -
         texture,
         "textured",
         points,
-        Transform::new_transform_with_position_and_rotation(
+        Transform::create_transform_with_position_and_rotation(
             Vector3d{x: -0.9, y: -0.8, z: 0.0 },
             Vector3d{x: 0.0, y: 0.0, z: 0.0 }
         ),

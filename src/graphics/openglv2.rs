@@ -57,7 +57,7 @@ impl Drop for Shader {
     }
 }
 
-struct Program {
+pub struct Program {
     program: u32
 }
 
@@ -87,13 +87,13 @@ impl Drop for Program {
     }
 }
 
-struct Vao {
+pub struct Vao {
     vao: u32,
     vbo: u32
 }
 
 impl Vao {
-    fn create(program: u32, vertices: &Vec<f32>) -> Self {
+    pub fn create(program: u32, vertices: &Vec<f32>) -> Self {
         unsafe {
             let gl_program = program as GLuint;
             let mut gl_vao = 0;

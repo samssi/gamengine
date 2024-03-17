@@ -7,6 +7,19 @@ use image::DynamicImage;
 fn read_file_to_string(filepath: &str) -> String {
     fs::read_to_string(filepath).unwrap()
 }
+
+pub fn read_vertex_shader_source(vertex_shader_filepath: &str) -> String {
+    read_file_to_string(&format!("assets/shaders/vertex/{}", vertex_shader_filepath))
+}
+
+pub fn read_fragment_shader_source(fragment_shader_filepath_file: &str) -> String {
+    read_file_to_string(&format!("assets/shaders/fragment/{}", fragment_shader_filepath_file))
+}
+
+pub fn read_wavefront_object_file(wavefront_obj_file_path: &str) -> String {
+    read_file_to_string(&format!("assets/objects/wavefront/{}", wavefront_obj_file_path))
+}
+
 fn list_directory_files(dirname: &str) -> Vec<DirEntry> {
     let files = fs::read_dir(dirname).unwrap();
 
@@ -17,7 +30,7 @@ fn list_directory_files(dirname: &str) -> Vec<DirEntry> {
     }).collect()
 }
 
-fn into_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
+fn into_file_content_map(dir_entry: Vec<DirEntry>) -> HashMap<String, String> {
     let mut shaders: HashMap<String, String> =
         dir_entry
             .iter()
@@ -62,18 +75,18 @@ fn into_image_map(dir_entry: Vec<DirEntry>) -> HashMap<String, DynamicImage> {
 }
 
 pub fn read_object_files_into_memory() -> HashMap<String, String> {
-    let object_files = list_directory_files("assets/objects");
-    into_map(object_files)
+    let object_files = list_directory_files("assets/objects/wavefront");
+    into_file_content_map(object_files)
 }
 
 pub fn read_fragment_shaders_into_memory() -> HashMap<String, String> {
     let fragment_shader_files = list_directory_files("assets/shaders/fragment");
-    into_map(fragment_shader_files)
+    into_file_content_map(fragment_shader_files)
 }
 
 pub fn read_vertex_shaders_into_memory() -> HashMap<String, String> {
     let vertex_shader_files = list_directory_files("assets/shaders/vertex");
-    into_map(vertex_shader_files)
+    into_file_content_map(vertex_shader_files)
 }
 
 pub fn read_texture_images_into_memory() -> HashMap<String, DynamicImage> {

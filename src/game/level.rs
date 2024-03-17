@@ -1,7 +1,7 @@
 use crate::entity::camera::Camera;
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::{Transform, Vector3d};
-use crate::io::object::{get_geometric_vertices, get_texture_points};
+use crate::io::wavefront_reader::{get_geometric_vertices, get_texture_points};
 use crate::state::context::{GameContext, ObjectContext, ShaderContext};
 
 pub struct Scene {

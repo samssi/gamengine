@@ -35,7 +35,7 @@ pub struct Shader {
 }
 
 impl Shader {
-    fn create(shader_type: ShaderType, shader_source_code: String) -> Self {
+    pub fn create(shader_type: ShaderType, shader_source_code: String) -> Self {
         unsafe {
             let gl_shader_source = as_c_string(&shader_source_code);
             let gl_shader = gl::CreateShader(to_gl_shader_type(&shader_type));
@@ -62,7 +62,7 @@ pub struct Program {
 }
 
 impl Program {
-    fn create(vertex_shader: &Shader, fragment_shader: &mut Shader) -> Self {
+    pub fn create(vertex_shader: &Shader, fragment_shader: &Shader) -> Self {
         let error_message = "Wrong type of shader as parameter";
         expect_shader_type_or_panic(&vertex_shader, ShaderType::VertexShader).expect(error_message);
         expect_shader_type_or_panic(&fragment_shader, ShaderType::FragmentShader).expect(error_message);
@@ -93,9 +93,9 @@ pub struct Vao {
 }
 
 impl Vao {
-    pub fn create(program: u32, vertices: &Vec<f32>) -> Self {
+    pub fn create(program: &Program, vertices: &Vec<f32>) -> Self {
         unsafe {
-            let gl_program = program as GLuint;
+            let gl_program = program.program as GLuint;
             let mut gl_vao = 0;
             let mut gl_vbo = 0;
 

@@ -1,6 +1,6 @@
 use crate::entity::entity::Entity3d;
 use crate::entity::structures::{Transform, Vector3d};
-use crate::io::object::{get_geometric_vertices, get_texture_points};
+use crate::io::wavefront_reader::{get_geometric_vertices, get_texture_points};
 use crate::state::context::{ObjectContext, ShaderContext};
 
 fn create_cube(shader_context: &ShaderContext, object_context: &ObjectContext, position: Option<Vector3d>) -> Entity3d {

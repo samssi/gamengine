@@ -31,6 +31,7 @@ pub struct WindowContext {
 pub struct ShaderContext {
     pub vertex_shaders: HashMap<String, GLuint>,
     pub fragment_shaders: HashMap<String, GLuint>,
+    // TODO: remove programs
     pub programs: HashMap<String, GLuint>
 }
 

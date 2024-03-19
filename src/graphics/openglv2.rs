@@ -1,7 +1,7 @@
 use std::any::Any;
 use std::ptr;
 use gl::types::{GLenum, GLint, GLuint};
-use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, as_stride, get_attrib_location, get_program_compilation_status, get_shader_compilation_status, map_params_to_vertex_shader};
+use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, as_stride, get_attrib_location, get_program_compilation_status, get_shader_compilation_status, map_params_to_program};
 
 #[derive(Debug)]
 pub enum ShaderType {
@@ -127,7 +127,7 @@ impl Vao {
                 as_c_void(vertices),
                 gl::STATIC_DRAW
             );
-            map_params_to_vertex_shader(gl_program, shader_params);
+            map_params_to_program(gl_program, shader_params);
 
             Vao{ vao: gl_vao, vbo: gl_vbo }
         }

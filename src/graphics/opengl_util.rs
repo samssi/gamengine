@@ -110,7 +110,7 @@ fn do_mapping_to_program(gl_program: GLuint, shader_params: &Vec<ShaderParam>) {
     })
 }
 
-pub fn map_params_to_vertex_shader(gl_program: GLuint, shader_params: &Option<Vec<ShaderParam>>) {
+pub fn map_params_to_program(gl_program: GLuint, shader_params: &Option<Vec<ShaderParam>>) {
     match shader_params {
         Some(shader_params) => {
             do_mapping_to_program(gl_program, shader_params)

@@ -6,7 +6,7 @@ use image::{DynamicImage, EncodableLayout};
 use crate::entity::camera::Camera;
 use crate::entity::entityv2::Entity3d;
 use crate::graphics::calculations::apply_3d_transformations_perspective;
-use crate::graphics::opengl_util::{as_c_void, as_glsizeiptr, get_attrib_location, get_uniform_location};
+use crate::graphics::opengl_util::{as_c_void, as_glsizeiptr, as_stride, get_attrib_location, get_uniform_location};
 use crate::state::context::{GameContext, WindowContext};
 
 fn create_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
@@ -79,10 +79,6 @@ pub fn create_program(vertex_shader: &GLuint, fragment_shader: &GLuint) -> GLuin
     link_shaders(&vertex_shader, &fragment_shader)
         .expect(&format!("shader linking failed for vertex shader {} and fragment shader {}",
                          vertex_shader, fragment_shader))
-}
-
-fn as_stride(value: usize) -> GLsizei {
-    (value * mem::size_of::<GLfloat>()) as GLsizei
 }
 
 pub fn create_vao(program: &GLuint, vertices: &Vec<f32>) -> GLuint {

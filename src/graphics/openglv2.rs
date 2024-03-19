@@ -1,7 +1,7 @@
 use std::any::Any;
 use std::ptr;
 use gl::types::{GLenum, GLint, GLuint};
-use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, get_program_compilation_status, get_shader_compilation_status};
+use crate::graphics::opengl_util::{as_c_string, as_c_void, as_const_gluint, as_glsizeiptr, as_stride, get_attrib_location, get_program_compilation_status, get_shader_compilation_status, map_params_to_vertex_shader};
 
 #[derive(Debug)]
 pub enum ShaderType {
@@ -26,15 +26,27 @@ pub fn expect_shader_type_or_panic(shader: &Shader, shader_type: ShaderType) -> 
     }
 }
 
-#[derive(Debug)]
+pub enum ShaderParamType {
+    UniformMat4,
+    UniformSampler2d,
+    Vec2,
+    Vec4
+}
+
+pub struct ShaderParam {
+    pub attribute_name: String,
+    pub param_type: ShaderParamType
+}
+
 pub struct Shader {
-    shader: u32,
-    shader_type: ShaderType,
-    shader_source_code: String
+    pub shader: u32,
+    pub shader_type: ShaderType,
+    pub shader_source_code: String,
+    pub shader_params: Option<Vec<ShaderParam>>
 }
 
 impl Shader {
-    pub fn create(shader_type: ShaderType, shader_source_code: String) -> Self {
+    pub fn create(shader_type: ShaderType, shader_source_code: String, shader_params: Option<Vec<ShaderParam>>) -> Self {
         unsafe {
             let gl_shader_source = as_c_string(&shader_source_code);
             let gl_shader = gl::CreateShader(to_gl_shader_type(&shader_type));
@@ -43,7 +55,7 @@ impl Shader {
             gl::CompileShader(gl_shader);
             get_shader_compilation_status(gl_shader).expect("Shader compilation failure!");
 
-            Shader {shader: gl_shader, shader_type, shader_source_code}
+            Shader {shader: gl_shader, shader_type, shader_source_code, shader_params}
         }
     }
 }
@@ -67,8 +79,6 @@ impl Program {
         // expect_shader_type_or_panic(&vertex_shader, ShaderType::VertexShader).expect(error_message);
         // expect_shader_type_or_panic(&fragment_shader, ShaderType::FragmentShader).expect(error_message);
 
-        println!("{:?}", vertex_shader);
-        println!("{:?}", fragment_shader);
         unsafe {
             let gl_program = gl::CreateProgram();
             let gl_vertex_shader: GLuint = vertex_shader.shader as GLuint;
@@ -93,11 +103,11 @@ impl Drop for Program {
 
 pub struct Vao {
     pub vao: u32,
-    vbo: u32
+    vbo: u32,
 }
 
 impl Vao {
-    pub fn create(program: &Program, vertices: &Vec<f32>) -> Self {
+    pub fn create(program: &Program, vertices: &Vec<f32>, shader_params: &Option<Vec<ShaderParam>>) -> Self {
         unsafe {
             let gl_program = program.program as GLuint;
             let mut gl_vao = 0;
@@ -117,6 +127,7 @@ impl Vao {
                 as_c_void(vertices),
                 gl::STATIC_DRAW
             );
+            map_params_to_vertex_shader(gl_program, shader_params);
 
             Vao{ vao: gl_vao, vbo: gl_vbo }
         }

@@ -1,9 +1,14 @@
 use std::ffi::{c_void, CString};
 use std::{mem, ptr};
-use gl::types::{GLchar, GLenum, GLfloat, GLint, GLsizeiptr, GLuint};
+use gl::types::{GLchar, GLenum, GLfloat, GLint, GLsizei, GLsizeiptr, GLuint};
+use crate::graphics::openglv2::{ShaderParam, ShaderParamType};
 
 pub fn as_c_string(string: &str) -> CString {
     CString::new(string).expect("CString::new failed")
+}
+
+pub fn as_stride(value: usize) -> GLsizei {
+    (value * mem::size_of::<GLfloat>()) as GLsizei
 }
 
 pub fn get_uniform_location(program: GLuint, uniform_name: &str) -> GLint {
@@ -81,5 +86,35 @@ pub fn get_program_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
             gl::GetProgramInfoLog(gl_id, len, ptr::null_mut(), buffer.as_mut_ptr() as *mut GLchar);
             Err(String::from_utf8_lossy(&buffer).into_owned())
         }
+    }
+}
+
+fn do_mapping_to_program(gl_program: GLuint, shader_params: &Vec<ShaderParam>) {
+    shader_params.iter().for_each(|shader_param: &ShaderParam| {
+        match shader_param.param_type {
+            ShaderParamType::UniformMat4 => {}
+            ShaderParamType::UniformSampler2d => {}
+            ShaderParamType::Vec2 => {}
+            ShaderParamType::Vec4 => unsafe {
+                let attrib_location = get_attrib_location(&gl_program, &shader_param.attribute_name);
+                gl::EnableVertexAttribArray(attrib_location);
+                gl::VertexAttribPointer(attrib_location,
+                                        3,
+                                        gl::FLOAT,
+                                        gl::FALSE,
+                                        as_stride(3),
+                                        ptr::null());
+
+            }
+        }
+    })
+}
+
+pub fn map_params_to_vertex_shader(gl_program: GLuint, shader_params: &Option<Vec<ShaderParam>>) {
+    match shader_params {
+        Some(shader_params) => {
+            do_mapping_to_program(gl_program, shader_params)
+        }
+        _ => {}
     }
 }

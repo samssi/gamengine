@@ -12,11 +12,10 @@ pub struct Entity3d {
 impl Entity3d {
     pub fn create(
         program: Program,
+        vao: Vao,
         transform: Transform,
         entity_data: EntityData
     ) -> Self {
-        let vao = Vao::create(&program, &entity_data.vertices);
-
         Self {
             vao,
             program,

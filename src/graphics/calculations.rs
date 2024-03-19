@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 use nalgebra::{ArrayStorage, Const, Isometry3, Matrix, Matrix4, OMatrix, Perspective3, Point3, Rotation3, U4, Unit, Vector3};
 use crate::entity::camera::Camera;
-use crate::entity::entity::Entity3d;
+use crate::entity::entityv2::Entity3d;
 use crate::entity::structures::Vector3d;
 use crate::state::context::GameContext;
 

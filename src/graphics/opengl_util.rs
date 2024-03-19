@@ -42,7 +42,7 @@ pub fn as_glsizeiptr(vertices: &Vec<f32>) -> GLsizeiptr {
     (vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr
 }
 
-pub fn get_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
+pub fn get_shader_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
     unsafe {
         let mut success = gl::FALSE as GLint;
         gl::GetShaderiv(gl_id, gl::COMPILE_STATUS, &mut success);
@@ -58,7 +58,27 @@ pub fn get_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
             buffer.extend([b' '].iter().cycle().take(len as usize));
 
             gl::GetShaderInfoLog(gl_id, len, ptr::null_mut(), buffer.as_mut_ptr() as *mut GLchar);
+            Err(String::from_utf8_lossy(&buffer).into_owned())
+        }
+    }
+}
 
+pub fn get_program_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
+    unsafe {
+        let mut success = gl::FALSE as GLint;
+        gl::GetProgramiv(gl_id, gl::LINK_STATUS, &mut success);
+
+        if success == gl::TRUE as GLint {
+            Ok(gl_id)
+        }
+        else {
+            let mut len: GLint = 0;
+            gl::GetProgramiv(gl_id, gl::INFO_LOG_LENGTH, &mut len);
+
+            let mut buffer: Vec<u8> = Vec::with_capacity(len as usize);
+            buffer.extend([b' '].iter().cycle().take(len as usize));
+
+            gl::GetProgramInfoLog(gl_id, len, ptr::null_mut(), buffer.as_mut_ptr() as *mut GLchar);
             Err(String::from_utf8_lossy(&buffer).into_owned())
         }
     }

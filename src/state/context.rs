@@ -3,7 +3,7 @@ use glfw::{Glfw, PWindow};
 use gl::types::GLuint;
 use image::DynamicImage;
 use crate::entity::camera::Camera;
-use crate::entity::entity::Entity3d;
+use crate::entity::entityv2::Entity3d;
 use crate::io::keyboard::KeyActivity;
 
 pub struct WindowProperties {

@@ -4,11 +4,10 @@ use std::{mem, ptr};
 use std::collections::HashMap;
 use image::{DynamicImage, EncodableLayout};
 use crate::entity::camera::Camera;
-use crate::entity::entity::{Entity3d};
+use crate::entity::entityv2::Entity3d;
 use crate::graphics::calculations::apply_3d_transformations_perspective;
 use crate::graphics::opengl_util::{as_c_void, as_glsizeiptr, get_attrib_location, get_uniform_location};
-use crate::state::context::{GameContext, ShaderContext, WindowContext};
-use crate::state::context::EntityContext;
+use crate::state::context::{GameContext, WindowContext};
 
 fn create_shader(source: &str, shader_type: GLenum) -> Result<GLuint, String> {
     let c_str_source = CString::new(source).expect("CString::new failed");
@@ -232,10 +231,10 @@ fn draw_entity<T>(game_context: &GameContext<T>, entity_3d: &Entity3d, camera: &
         let matrix_data = final_matrix.as_slice();
         let matrix_data_ptr: *const GLfloat = matrix_data.as_ptr();
 
-        gl::UniformMatrix4fv(get_uniform_location(entity_3d.program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
-        gl::BindVertexArray(entity_3d.vao);
+        gl::UniformMatrix4fv(get_uniform_location(entity_3d.program.program, "u_matrix"), 1, gl::FALSE, matrix_data_ptr);
+        gl::BindVertexArray(entity_3d.vao.vao);
 
-        let points_len: GLsizei = entity_3d.points.len() as GLsizei;
+        let points_len: GLsizei = entity_3d.entity_data.vertices.len() as GLsizei;
         gl::DrawArrays(gl::TRIANGLES, 0, points_len);
     }
 }
@@ -256,7 +255,7 @@ fn print_fps(delta_time: u128) {
 
 pub fn init_renderer(window_context: &mut WindowContext) {
     unsafe {
-        gl::ClearColor(0.0, 0.0, 0.0, 1.0);
+        gl::ClearColor(0.4, 0.5, 0.7, 1.0);
 
         gl::Enable(gl::CULL_FACE);
         gl::Enable(gl::DEPTH_TEST);

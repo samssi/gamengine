@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use glfw::{GlfwReceiver, WindowEvent};
 use rand::prelude::*;
 use crate::game::context::GameState;
-use crate::game::level::{leppis_default_transform, Level, Scene};
+use crate::game::level::{leppis_default_transform};
 use crate::game::context::Mode::{CAMERA, OBJECT};
 use crate::game::keyboard_handler::glfw_press_handler;
+use crate::game::scene::Scene;
 use crate::game::window_handler::glfw_cursor_handler;
 use crate::graphics::opengl::{create_program, create_shader_programs};
 use crate::io::keyboard::{create_keymap};
@@ -77,9 +78,9 @@ fn shake_leppis(current_pos: f32, axis: Axis) -> f32 {
 }
 
 fn game_render_event(game_context: &mut GameContext<GameState>) {
-    let leppis_pos = &mut game_context.entity_context.entities[1].transform.position;
+    /*let leppis_pos = &mut game_context.entity_context.entities[1].transform.position;
     leppis_pos.y = leppis_pos.y + shake_leppis(leppis_pos.y, Axis::Y);
-    leppis_pos.z = leppis_pos.z + shake_leppis(leppis_pos.z, Axis::Z);
+    leppis_pos.z = leppis_pos.z + shake_leppis(leppis_pos.z, Axis::Z);*/
 }
 
 fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
@@ -108,12 +109,13 @@ fn init_game() -> (GameContext<GameState>, GlfwReceiver<(f64, WindowEvent)>) {
 
     let shader_context = create_shader_context();
     //let mut entities: Vec<Entity3d> = generate_cube_space(&shader_context, &object_context);
-    let level1 = Scene::load(&object_context, &shader_context);
-    println!("Rendering {} entities.", level1.entities.len());
+    //let level1 = Scene::load(&object_context, &shader_context);
+    let scene = Scene::load();
+    println!("Rendering {} entities.", scene.entities.len());
 
     let entity_context = EntityContext{
-        entities: level1.entities,
-        cameras: level1.cameras
+        entities: scene.entities,
+        cameras: scene.cameras
     };
 
     let mouse_context = MouseContext{

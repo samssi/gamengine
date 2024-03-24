@@ -1,7 +1,9 @@
 use std::ffi::{c_void, CString};
 use std::{mem, ptr};
 use gl::types::{GLchar, GLenum, GLfloat, GLint, GLsizei, GLsizeiptr, GLuint};
-use crate::graphics::openglv2::{VertexShader, ShaderParam, ShaderParamType, ShaderType};
+use image::{EncodableLayout, RgbaImage};
+use ShaderParamType::{UniformMat4, UniformSampler2d, Vec2};
+use crate::graphics::openglv2::{VertexShader, ShaderParam, ShaderParamType, ShaderType, FragmentShader};
 use crate::graphics::openglv2::ShaderParamType::Vec4;
 use crate::io::loader::{read_fragment_shader_source, read_vertex_shader_source};
 
@@ -43,6 +45,10 @@ pub fn as_const_gluint(value: u32) -> *const GLuint {
 
 pub fn as_c_void(vertices: &Vec<f32>) -> *const c_void {
     vertices.as_ptr() as *const c_void
+}
+
+pub fn image_as_c_void(image_rgba: RgbaImage) -> *const c_void {
+    image_rgba.as_bytes().as_ptr() as *const c_void
 }
 
 pub fn as_glsizeiptr(vertices: &Vec<f32>) -> GLsizeiptr {
@@ -94,10 +100,11 @@ pub fn get_program_compilation_status(gl_id: GLuint) -> Result<GLuint, String> {
 fn do_mapping_to_program(gl_program: GLuint, shader_params: &Vec<ShaderParam>) {
     shader_params.iter().for_each(|shader_param: &ShaderParam| {
         match shader_param.param_type {
-            ShaderParamType::UniformMat4 => {}
-            ShaderParamType::UniformSampler2d => {}
-            ShaderParamType::Vec2 => {}
-            ShaderParamType::Vec4 => unsafe {
+            UniformMat4 => {}
+            UniformSampler2d => {}
+            Vec2 => {
+            }
+            Vec4 => unsafe {
                 let attrib_location = get_attrib_location(&gl_program, &shader_param.attribute_name);
                 gl::EnableVertexAttribArray(attrib_location);
                 gl::VertexAttribPointer(attrib_location,
@@ -121,13 +128,13 @@ pub fn map_params_to_program(gl_program: GLuint, shader_params: &Option<Vec<Shad
     }
 }
 
-pub fn create_vertex_and_fragment_shaders(filename: &str, shader_params: Vec<ShaderParam>) -> (VertexShader, VertexShader) {
+pub fn create_vertex_and_fragment_shaders(filename: &str, shader_params: Vec<ShaderParam>) -> (VertexShader, FragmentShader) {
     let vertex_shader = VertexShader::create(
-        read_vertex_shader_source("basic.vert"),
+        read_vertex_shader_source(&format!("{}.vert", filename)),
         Some(shader_params));
 
-    let fragment_shader = VertexShader::create(
-        read_fragment_shader_source("basic.frag"), None);
+    let fragment_shader = FragmentShader::create(
+        read_fragment_shader_source(&format!("{}.frag", filename)));
 
     (vertex_shader, fragment_shader)
 }

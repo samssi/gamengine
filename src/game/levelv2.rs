@@ -29,8 +29,8 @@ impl LevelTrait for Level {
         let camera = Camera::create(
             1.0,
             1000.0,
-            100.0,
-            Vector3d { x: 1.7, y: 0.0, z: 0.0 },
+            10.0,
+            Vector3d { x: 5.0, y: 0.0, z: 0.0 },
             Vector3d{ x: 0.0, y: 0.0, z: 180.0 });
 
         let vao = Vao::create(&program, &entity_data.vertices, &vertex_shader.shader_params);

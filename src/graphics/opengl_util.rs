@@ -1,7 +1,9 @@
 use std::ffi::{c_void, CString};
 use std::{mem, ptr};
 use gl::types::{GLchar, GLenum, GLfloat, GLint, GLsizei, GLsizeiptr, GLuint};
-use crate::graphics::openglv2::{ShaderParam, ShaderParamType};
+use crate::graphics::openglv2::{VertexShader, ShaderParam, ShaderParamType, ShaderType};
+use crate::graphics::openglv2::ShaderParamType::Vec4;
+use crate::io::loader::{read_fragment_shader_source, read_vertex_shader_source};
 
 pub fn as_c_string(string: &str) -> CString {
     CString::new(string).expect("CString::new failed")
@@ -117,4 +119,15 @@ pub fn map_params_to_program(gl_program: GLuint, shader_params: &Option<Vec<Shad
         }
         _ => {}
     }
+}
+
+pub fn create_vertex_and_fragment_shaders(filename: &str, shader_params: Vec<ShaderParam>) -> (VertexShader, VertexShader) {
+    let vertex_shader = VertexShader::create(
+        read_vertex_shader_source("basic.vert"),
+        Some(shader_params));
+
+    let fragment_shader = VertexShader::create(
+        read_fragment_shader_source("basic.frag"), None);
+
+    (vertex_shader, fragment_shader)
 }

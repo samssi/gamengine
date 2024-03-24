@@ -16,16 +16,6 @@ pub fn to_gl_shader_type(shader_type: &ShaderType) -> GLenum {
     }
 }
 
-// TODO: fixme
-pub fn expect_shader_type_or_panic(shader: &Shader, shader_type: ShaderType) -> Result<(), &str> {
-    if matches!(&shader.shader_type, shader_type) {
-        Err("Shader type mismatch!")
-    }
-    else {
-        Ok(())
-    }
-}
-
 pub enum ShaderParamType {
     UniformMat4,
     UniformSampler2d,
@@ -38,31 +28,48 @@ pub struct ShaderParam {
     pub param_type: ShaderParamType
 }
 
-pub struct Shader {
+pub struct VertexShader {
     pub shader: u32,
-    pub shader_type: ShaderType,
     pub shader_source_code: String,
     pub shader_params: Option<Vec<ShaderParam>>
 }
 
-impl Shader {
-    pub fn create(shader_type: ShaderType, shader_source_code: String, shader_params: Option<Vec<ShaderParam>>) -> Self {
+impl VertexShader {
+    pub fn create(shader_source_code: String, shader_params: Option<Vec<ShaderParam>>) -> Self {
         unsafe {
             let gl_shader_source = as_c_string(&shader_source_code);
-            let gl_shader = gl::CreateShader(to_gl_shader_type(&shader_type));
+            let gl_shader = gl::CreateShader(gl::VERTEX_SHADER);
 
             gl::ShaderSource(gl_shader, 1, &gl_shader_source.as_ptr(), ptr::null());
             gl::CompileShader(gl_shader);
-            get_shader_compilation_status(gl_shader).expect("Shader compilation failure!");
+            get_shader_compilation_status(gl_shader).expect("Vertex shader compilation failure!");
 
-            Shader {shader: gl_shader, shader_type, shader_source_code, shader_params}
+            VertexShader {shader: gl_shader, shader_source_code, shader_params}
         }
     }
 }
 
+pub struct FragmentShader {
+    pub shader: u32,
+    pub shader_source_code: String,
+}
 
+impl FragmentShader {
+    pub fn create(shader_source_code: String) -> Self {
+        unsafe {
+            let gl_shader_source = as_c_string(&shader_source_code);
+            let gl_shader = gl::CreateShader(gl::FRAGMENT_SHADER);
 
-impl Drop for Shader {
+            gl::ShaderSource(gl_shader, 1, &gl_shader_source.as_ptr(), ptr::null());
+            gl::CompileShader(gl_shader);
+            get_shader_compilation_status(gl_shader).expect("Fragment shader compilation failure!");
+
+            FragmentShader {shader: gl_shader, shader_source_code}
+        }
+    }
+}
+
+impl Drop for VertexShader {
     fn drop(&mut self) {
         unsafe { gl::DeleteShader(self.shader as GLuint) }
     }
@@ -73,12 +80,7 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn create(vertex_shader: &Shader, fragment_shader: &Shader) -> Self {
-        let error_message = "Wrong type of shader as parameter";
-        // TODO: fixme
-        // expect_shader_type_or_panic(&vertex_shader, ShaderType::VertexShader).expect(error_message);
-        // expect_shader_type_or_panic(&fragment_shader, ShaderType::FragmentShader).expect(error_message);
-
+    pub fn create(vertex_shader: &VertexShader, fragment_shader: &FragmentShader) -> Self {
         unsafe {
             let gl_program = gl::CreateProgram();
             let gl_vertex_shader: GLuint = vertex_shader.shader as GLuint;
